@@ -10,7 +10,7 @@
 
     # Use the GTK file chooser. If you want Nautilus as the file chooser
     # instead, set this to true and add `nautilus` to home.packages.
-    useNautilus = false;
+    useNautilus = true;
   };
 
   # ── Login manager ──────────────────────────────────────────────────────
