@@ -169,7 +169,8 @@ launch.
 
 The module manages a profile named `default` under `~/.config/zen/default`.
 The existing Zen profile is left untouched; sign in to Sync in the managed
-profile to pull tabs/Spaces across.
+profile to pull tabs/Spaces across. If the old profile was not already signed
+in to Sync, sign in there first and let it upload before switching.
 
 Do **not** commit Zen/Firefox backup files. They contain bookmarks, history,
 settings, passwords, payment methods, extensions, and other browsing data. The
