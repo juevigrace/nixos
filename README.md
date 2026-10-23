@@ -10,24 +10,83 @@ flake.nix                         # inputs + the two hosts
 hosts/tear/                       # desktop: hostname, GPU, hardware config
 hosts/laila/                      # laptop: hostname, GPU, hardware config
 modules/nixos/
-  default.nix                     # imports the shared modules below
+  default.nix                     # imports every shared system module
   nixpkgs.nix                     # stable/unstable overlay, allowUnfree
-  common.nix                      # boot, network, user, SSH server, locale
   packages.nix                    # system-wide packages
-  services.nix                    # extra system services
-  desktop.nix                     # Niri, greetd, audio, Bluetooth, fonts
+  nix.nix                         # flakes, channels
+  state.nix                       # stateVersion
+  locale.nix                      # locale + timezone
+  environment.nix                 # EDITOR, shell notes
+  boot/
+    systemd-boot.nix
+    zram.nix
+  networking/networkmanager.nix
+  users/juevigrace.nix
+  hardware/
+    bluetooth.nix
+    graphics.nix
+    fonts.nix
+  programs/
+    niri.nix                      # system-level Niri
+    ssh-agent.nix                 # system SSH agent
+    xwayland-satellite.nix
+  services/
+    openssh.nix                   # SSH server
+    pipewire.nix                  # audio
+    greetd.nix                    # login manager
+    blueman.nix
+    gnome-keyring.nix
+    gvfs.nix
+    udisks2.nix
+    upower.nix
 modules/home-manager/
-  common.nix                      # packages, git, SSH client
-  programs.nix                    # shell/tools
-  desktop.nix                     # bar, notifications, launcher, idle, lock
-  files.nix                       # links the real config files into ~/.config
-  files/
-    niri/config.kdl               # Niri keybinds and layout
-    waybar/config.json            # Waybar modules
-    waybar/style.css              # Waybar colours
-    mako/config                   # notification appearance
-    fuzzel/fuzzel.ini             # launcher appearance
-    swaylock/config               # lock screen appearance
+  default.nix                     # imports every shared user module
+  packages/                       # one file per package-only tool
+    brightnessctl.nix
+    fd.nix
+    fzf.nix
+    grim.nix
+    nautilus.nix
+    neovim.nix
+    opencode.nix
+    playerctl.nix
+    pwvucontrol.nix
+    ripgrep.nix
+    satty.nix
+    slurp.nix
+    swaybg.nix
+    tree.nix
+    wiremix.nix
+    wireplumber.nix
+    wl-clipboard.nix
+  programs/
+    git.nix
+    ssh.nix                       # SSH client
+    ghostty.nix
+    waypaper.nix
+    zen.nix                       # Zen Browser
+    waybar/
+      default.nix
+      config.json
+      style.css
+    niri/
+      default.nix
+      config.kdl
+    fuzzel/
+      default.nix
+      fuzzel.ini
+    swaylock/
+      default.nix
+      config
+  services/
+    mako/
+      default.nix
+      config
+    swayidle.nix
+    cliphist.nix
+    polkit-gnome.nix
+    network-manager-applet.nix
+    blueman-applet.nix
 home/juevigrace.nix               # wires the shared home modules together
 scripts/rebuild                   # switch the current host
 scripts/update                    # nix flake update
@@ -51,7 +110,7 @@ Both hosts use the same Niri desktop:
 
 - **Login manager:** greetd + tuigreet. The session command is
   `${pkgs.niri}/bin/niri-session`.
-- **Compositor:** Niri, with the GTK file chooser (`useNautilus = false`).
+- **Compositor:** Niri, with the Nautilus file chooser (`useNautilus = true`).
 - **Terminal:** Ghostty (`Mod+T`).
 - **Launcher:** fuzzel (`Mod+D`).
 - **Bar:** Waybar with the native `niri/workspaces` and `niri/window` modules.
@@ -62,21 +121,23 @@ Both hosts use the same Niri desktop:
   `wiremix` is the TUI; open Wiremix with `Mod+Shift+A` to select the rear or
   front microphone port. Clicking the volume module in Waybar opens
   `pwvucontrol`.
-- **Network:** NetworkManager is enabled in `modules/nixos/common.nix`. The
-  Waybar network module opens `nm-connection-editor`; `nm-applet` and
-  `blueman-applet` are also running.
+- **Network:** NetworkManager is enabled in
+  `modules/nixos/networking/networkmanager.nix`. The Waybar network module
+  opens `nm-connection-editor`; `nm-applet` and `blueman-applet` are also
+  running.
 - **X11 apps:** `xwayland-satellite`, not `programs.xwayland`.
 - **Fonts:** Noto (including CJK and emoji), DejaVu, Liberation, Unifont,
   Cantarell, Inter, Roboto, Font Awesome, Material Icons, and Nerd Fonts.
 
 ### Configuration files
 
-The real config files live in `modules/home-manager/files/` and are linked
-into `~/.config` as **live** links with
+The real config files live next to their app module, for example
+`modules/home-manager/programs/waybar/config.json`, and are linked into
+`~/.config` as **live** links with
 `config.lib.file.mkOutOfStoreSymlink`. Editing either path edits the tracked
 file; a rebuild is only needed for package/service changes. If you move the
-repo out of `~/Projects/nixos`, update the `liveConfig` path in
-`modules/home-manager/files.nix`.
+repo out of `~/Projects/nixos`, update the `liveConfig` path at the top of the
+app modules that link config files (Waybar, Niri, Fuzzel, Swaylock, and Mako).
 
 Useful reloads after editing:
 
@@ -88,6 +149,36 @@ makoctl reload
 
 The Niri config is validated by `niri validate`. `~/.config/nvim` is still a
 separate manual clone and is not managed here.
+
+### Zen Browser
+
+Zen is installed by `modules/home-manager/programs/zen.nix` using the
+`0xc000022070/zen-browser-flake` home-manager module. Extensions are installed
+declaratively through Firefox enterprise policies:
+
+- uBlock Origin
+- Malwarebytes Browser Guard
+- Return YouTube Dislike
+- Proton VPN
+
+Tabs, pinned tabs, essentials, and Spaces are synced through Firefox Sync:
+sign in to the same Mozilla account on each machine and enable "Sync your
+Spaces across devices" in Zen's settings.
+`zen.workspaces.continue-where-left-off` restores the previous session on
+launch.
+
+The module manages a profile named `default` under `~/.config/zen/default`.
+The existing Zen profile is left untouched; sign in to Sync in the managed
+profile to pull tabs/Spaces across.
+
+Do **not** commit Zen/Firefox backup files. They contain bookmarks, history,
+settings, passwords, payment methods, extensions, and other browsing data. The
+repo ignores `*.zenbackup`, `zen-backup-*`, and `backup-*.json`; keep backups
+outside the repo, optionally on an encrypted drive.
+
+If Firefox Sync does not restore your Spaces/pins, the same module supports
+declarative `profiles.default.spaces` and `.pins` in `zen.nix`. Close Zen
+before rebuilding.
 
 ### GPU
 

@@ -1,0 +1,4 @@
+# Browser profile backups contain personal data; never commit them.
+*.zenbackup
+zen-backup-*
+backup-*.json

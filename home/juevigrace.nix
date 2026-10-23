@@ -1,14 +1,11 @@
 # The one home-manager profile, shared by tear and laila.
 #
-# This file is intentionally small: it only wires the shared modules together
+# This file is intentionally small: it wires the shared home modules together
 # and declares the fixed user identity. Add user configuration in
 # modules/home-manager/.
-{ config, pkgs, ... }: {
+{ ... }: {
   imports = [
-    ../modules/home-manager/common.nix
-    ../modules/home-manager/programs.nix
-    ../modules/home-manager/desktop.nix
-    ../modules/home-manager/files.nix
+    ../modules/home-manager
   ];
 
   home = {
