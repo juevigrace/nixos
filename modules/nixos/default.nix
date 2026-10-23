@@ -1,7 +1,14 @@
-# Add your reusable NixOS modules to this directory, on their own file (https://nixos.wiki/wiki/Module).
-# These should be stuff you would like to share with others, not your personal configurations.
-{
-  # List your module files here
-  # my-module = import ./my-module.nix;
-  imports = [./boot.nix ./system-programs.nix ./locals.nix ./desktop.nix];
+# Aggregator for the shared NixOS modules.
+#
+# Add new shared system modules to this list. Keeping the flake entry as
+# `./modules/nixos` means flake.nix does not need to change when you split
+# common.nix into more files later.
+{ ... }: {
+  imports = [
+    ./nixpkgs.nix
+    ./common.nix
+    ./packages.nix
+    ./services.nix
+    ./desktop.nix
+  ];
 }

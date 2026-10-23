@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Rebuild this machine from the flake.
+# Usage:
+#   ./scripts/rebuild          # use the current hostname
+#   ./scripts/rebuild tear     # build a specific host
+
+cd "$(dirname "$0")/.."
+host="${1:-$(hostname -s)}"
+
+exec sudo nixos-rebuild switch --flake ".#${host}"

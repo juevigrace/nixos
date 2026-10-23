@@ -1,76 +1,65 @@
 {
-  description = "Your new nix config";
+  description = "Shared NixOS config for tear (desktop) and laila (laptop)";
 
   inputs = {
-    # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    # You can access packages and modules from different nixpkgs revs
-    # at the same time. Here's an working example:
+    # Latest stable release.
+    #
+    # If you ever want the WHOLE system on unstable, change this to
+    #   "github:nixos/nixpkgs/nixos-unstable"
+    # and change home-manager below to "master", then run:
+    #   nix flake update
+    #
+    # For normal day-to-day use you do NOT need to do that: the overlay in
+    # modules/nixos/nixpkgs.nix gives you `pkgs.unstable.<package>` while the
+    # rest of the system stays on stable.
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+
+    # A second nixpkgs, used only for packages explicitly selected with
+    # `pkgs.unstable.<name>`. This does not replace the stable package set.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
-    # Home manager
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    # Zen browser flake
-    zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
-      # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
-      # to have it up-to-date or simply don't specify the nixpkgs input
+    # Home Manager tracks the same stable release as nixpkgs above.
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
   };
 
   outputs = {
-    self,
     nixpkgs,
     home-manager,
     ...
   } @ inputs: let
-    inherit (self) outputs;
-    # Supported systems for your flake packages, shell, etc.
-    systems = [
-      "aarch64-linux"
-      "i686-linux"
-      "x86_64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
-    # This is a function that generates an attribute by calling a function you
-    # pass to it, with each system as an argument
-    forAllSystems = nixpkgs.lib.genAttrs systems;
-  in {
-    # Your custom packages
-    # Accessible through 'nix build', 'nix shell', etc
-    packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-    # Formatter for your nix files, available through 'nix fmt'
-    # Other options beside 'alejandra' include 'nixpkgs-fmt'
-    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+    # Both machines share every module. Only hosts/<host>/ is different.
+    mkHost = host:
+      nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
 
-    # Your custom packages and modifications, exported as overlays
-    overlays = import ./overlays {inherit inputs;};
-    # Reusable nixos modules you might want to export
-    # These are usually stuff you would upstream into nixpkgs
-    nixosModules = import ./modules/nixos;
-    # Reusable home-manager modules you might want to export
-    # These are usually stuff you would upstream into home-manager
-    homeManagerModules = import ./modules/home-manager;
-
-    # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
-    nixosConfigurations = {
-      juevigrace = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs outputs;
-          system = "x86_64-linux";
-        };
         modules = [
-          # > Our main nixos configuration file <
-          ./nixos/configuration.nix
+          # Per-host system + hardware configuration.
+          ./hosts/${host}
+
+          # Shared system configuration. This is a directory import, so it
+          # loads modules/nixos/default.nix, which imports the rest.
+          ./modules/nixos
+
+          # Home Manager as a NixOS module (not standalone).
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = ".bkp";
+              extraSpecialArgs = {inherit inputs;};
+              users.juevigrace = import ./home/juevigrace.nix;
+            };
+          }
         ];
       };
+  in {
+    nixosConfigurations = {
+      tear = mkHost "tear";
+      laila = mkHost "laila";
     };
   };
 }

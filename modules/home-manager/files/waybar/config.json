@@ -1,0 +1,42 @@
+{
+  "mainBar": {
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "spacing": 4,
+    "modules-left": ["niri/workspaces", "niri/window"],
+    "modules-right": ["pulseaudio", "network", "clock", "tray"],
+    "niri/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "default": "·",
+        "active": "●",
+        "focused": "●",
+        "empty": "·"
+      }
+    },
+    "niri/window": {
+      "format": "{}",
+      "max-length": 60
+    },
+    "pulseaudio": {
+      "format": "{icon} {volume}%",
+      "format-muted": "muted",
+      "format-icons": ["󰕿", "󰖀", "󰕾"],
+      "on-click": "pwvucontrol"
+    },
+    "network": {
+      "format-wifi": "󰤨  {essid}",
+      "format-ethernet": "󰈀  wired",
+      "format-disconnected": "󰤭  offline",
+      "on-click": "nm-connection-editor"
+    },
+    "clock": {
+      "format": "{:%a %d %b  %H:%M}",
+      "tooltip-format": "{calendar}"
+    },
+    "tray": {
+      "spacing": 8
+    }
+  }
+}
