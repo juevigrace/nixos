@@ -14,6 +14,8 @@
     slurp
     satty
     wl-clipboard
+    unstable.opencode
+    firefox
   ];
 
   # ── Bar ────────────────────────────────────────────────────────────────
