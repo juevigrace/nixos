@@ -31,6 +31,7 @@ modules/home-manager/
 home/juevigrace.nix               # wires the shared home modules together
 scripts/rebuild                   # switch the current host
 scripts/update                    # nix flake update
+scripts/install.sh                # install either host on a chosen disk
 ```
 
 ## Stable and unstable side by side
@@ -124,60 +125,104 @@ Stylix is the best fit if you want everything declarative; Matugen or Wallust
 is better if you want colours to change every time you pick a wallpaper.
 
 
-## First install on `tear` (`/dev/sda`)
+## First install
 
 Back up `~/.ssh` first. The private keys cannot be stored in this repo.
 
-1. Boot the NixOS graphical installer.
-2. Manual partitioning: **only use the free space on `/dev/sda`**. Do not
-   touch `sda2`, `sda3`, `sda4`, or `nvme0n1`.
-   - ~1 GiB, FAT32, mount `/boot`, flags `boot` and `esp` (new ESP).
-   - Remaining ~696 GiB, mount `/` (ext4, or LUKS + btrfs if you prefer).
-   - No swap partition: `zramSwap` is enabled.
-3. Install, boot the new system, then replace the placeholder hardware file:
-   ```sh
-   sudo nixos-generate-config --show-hardware-config \
-     > ~/Projects/nixos/hosts/tear/hardware-configuration.nix
-   ```
-4. Check the installed release and make the flake match it:
-   ```sh
-   nixos-version
-   ```
-   If it is not `26.05`, update both input URLs in `flake.nix`, both
-   `stateVersion` values (`modules/nixos/common.nix` and
-   `home/juevigrace.nix`), and the home-manager URL.
-5. Refresh the lock (it was written against the old inputs):
-   ```sh
-   cd ~/Projects/nixos
-   nix flake update
-   ```
-6. Build:
-   ```sh
-   ./scripts/rebuild tear
-   ```
-   If flakes are not enabled yet on the fresh install:
-   ```sh
-   sudo nixos-rebuild switch --flake .#tear \
-     --extra-experimental-features 'nix-command flakes'
-   ```
-7. Restore the SSH private keys with correct permissions:
-   ```sh
-   install -d -m 700 ~/.ssh
-   install -m 600 /path/to/backup/personal/id_ed25519 ~/.ssh/personal/id_ed25519
-   install -m 600 /path/to/backup/lan ~/.ssh/lan
-   ```
-8. Clone the nvim config (it is intentionally not managed by Nix):
-   ```sh
-   git clone git@github.com:<you>/<nvim-repo>.git ~/.config/nvim
-   ```
-   The `neovim` program itself is installed by home-manager.
+The install script is meant to run from the NixOS installer. It erases the
+whole target disk, creates the Btrfs layout, copies this repo to
+`/home/juevigrace/Projects/nixos`, replaces the host's placeholder hardware
+file, and installs the flake.
 
-### Windows
+This flake targets NixOS 26.05. If your installer is a different release,
+update the flake inputs and both `stateVersion` values before installing.
 
-`systemd-boot` is installed on the new `sda` ESP and will not list Windows,
-because Windows' boot manager is on `nvme0n1p1`. Use the firmware boot menu
-(F12/F8) to boot Windows. If BitLocker is enabled, have the recovery key
-available before changing boot entries.
+```sh
+# tear, /dev/sda
+sudo ./scripts/install.sh tear /dev/sda
+
+# laila, actual laptop disk
+sudo ./scripts/install.sh laila /dev/nvme0n1
+
+# use a repo from somewhere other than the one containing the script
+sudo ./scripts/install.sh tear /dev/sda /path/to/nixos
+```
+
+The script asks you to type `WIPE` before it touches the disk. The shared
+layout is:
+
+| Partition | Size | Use |
+|---|---|---|
+| `...1` | 1 GiB | FAT32 ESP, mounted at `/boot` |
+| `...2` | rest | Btrfs, mounted at `/` |
+
+Btrfs subvolumes: `@`, `@home`, `@nix`, `@log`, `@snapshots`. There is no swap
+partition; `zramSwap` is enabled.
+
+`nixos-install` will ask for a **root** password. After it finishes, the
+script runs `nixos-enter --root /mnt -c 'passwd juevigrace'` so you set the
+`juevigrace` password before rebooting. There is no plaintext initial password
+in the config.
+
+### User password
+
+No initial password is configured. Set it during installation when the script
+prompts, or later with:
+
+```sh
+passwd
+```
+
+### Recover an existing install without wiping
+
+First try a local TTY: press `Ctrl+Alt+F2`, log in as `root` with the password
+you set during `nixos-install`, then run:
+
+```sh
+passwd juevigrace
+```
+
+If the root password was mistyped or does not work, boot the NixOS installer,
+mount the existing subvolumes, and reset both passwords. Replace `/dev/sda2`
+and `/dev/sda1` with laila's devices if needed.
+
+```sh
+sudo mount -o subvol=@ /dev/sda2 /mnt
+sudo mkdir -p /mnt/{home,nix,var/log,.snapshots,boot}
+sudo mount -o subvol=@home /dev/sda2 /mnt/home
+sudo mount -o subvol=@nix /dev/sda2 /mnt/nix
+sudo mount -o subvol=@log /dev/sda2 /mnt/var/log
+sudo mount -o subvol=@snapshots /dev/sda2 /mnt/.snapshots
+sudo mount /dev/sda1 /mnt/boot
+
+sudo nixos-enter --root /mnt -c 'passwd juevigrace'
+sudo nixos-enter --root /mnt -c 'passwd root'
+
+sync
+sudo umount -R /mnt
+```
+
+Reboot and log in normally. No reinstall is needed.
+
+### Booting
+
+`systemd-boot` is installed on the new ESP. Omarchy on `/dev/nvme0n1` is not
+modified; use the firmware boot menu (F12/F8) to boot it. The old Windows
+install on `/dev/sda` is erased by the install script.
+
+### After first login
+
+- Restore the SSH private keys with correct permissions:
+  ```sh
+  install -d -m 700 ~/.ssh
+  install -m 600 /path/to/backup/personal/id_ed25519 ~/.ssh/personal/id_ed25519
+  install -m 600 /path/to/backup/lan ~/.ssh/lan
+  ```
+- Clone the nvim config (it is intentionally not managed by Nix):
+  ```sh
+  git clone git@github.com:<you>/<nvim-repo>.git ~/.config/nvim
+  ```
+  The `neovim` program itself is installed by home-manager.
 
 ## SSH
 

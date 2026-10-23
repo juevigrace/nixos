@@ -3,7 +3,8 @@
 # This file is intentionally not shared with tear: disks, CPU, kernel
 # modules, and boot entries are host-specific.
 #
-# After booting the installed system, generate the real file:
+# `scripts/install.sh laila <disk>` replaces this file automatically during install.
+# To regenerate it later:
 #
 #   sudo nixos-generate-config --show-hardware-config \
 #     > ~/Projects/nixos/hosts/laila/hardware-configuration.nix

@@ -2,10 +2,15 @@
 #
 # Put things here when tear and laila should behave the same way.
 # Put host-specific things (GPU, hostname, disks) in hosts/<host>/.
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   # ── Nix ────────────────────────────────────────────────────────────────
   nix = {
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = ["nix-command" "flakes"];
 
     # Channels are not used; the flake inputs are the source of truth.
     channel.enable = false;
@@ -28,7 +33,7 @@
   # ── The one user shared by both machines ───────────────────────────────
   users.users.juevigrace = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = ["wheel" "networkmanager"];
 
     # Incoming SSH access to both tear and laila. These are PUBLIC keys.
     # The matching private keys still have to be copied to ~/.ssh by hand.
