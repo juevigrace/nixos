@@ -3,7 +3,7 @@
 # This file is intentionally small: it wires the shared home modules together
 # and declares the fixed user identity. Add user configuration in
 # modules/home-manager/.
-{ ... }: {
+{...}: {
   imports = [
     ../modules/home-manager
   ];

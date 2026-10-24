@@ -2,7 +2,7 @@
 #
 # Each app, service, or hardware concern lives in its own file. Add a new
 # module by dropping a file in the matching folder and importing it here.
-{ inputs, ... }: {
+{inputs, ...}: {
   imports = [
     inputs.nix-index-database.nixosModules.default
 

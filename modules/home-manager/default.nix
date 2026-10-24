@@ -2,8 +2,10 @@
 #
 # Each app or service lives in its own file/folder. To disable something,
 # comment out its import below.
-{ ... }: {
+{inputs, ...}: {
   imports = [
+    inputs.stylix.homeModules.stylix
+
     # CLI tools
     ./packages/android-tools.nix
     ./packages/brightnessctl.nix
