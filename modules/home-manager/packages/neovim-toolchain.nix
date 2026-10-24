@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   # Build/runtime dependencies for Mason. Mason still installs the actual LSPs,
   # formatters, linters, and DAP adapters itself.
   home.packages = with pkgs; [
@@ -22,6 +22,8 @@
     go
     rustc
     cargo
+
+    hunspell
 
     # Java-based Mason packages (jdtls, kotlin-lsp, gradle-language-server,
     # google-java-format, ktlint) use the SDKMAN JBR configured in
