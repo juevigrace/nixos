@@ -2,8 +2,10 @@
 #
 # Each app, service, or hardware concern lives in its own file. Add a new
 # module by dropping a file in the matching folder and importing it here.
-{ ... }: {
+{ inputs, ... }: {
   imports = [
+    inputs.nix-index-database.nixosModules.default
+
     ./nixpkgs.nix
     ./packages.nix
 
@@ -12,7 +14,7 @@
     ./locale.nix
     ./environment.nix
 
-    ./boot/systemd-boot.nix
+    ./boot/limine.nix
     ./boot/zram.nix
 
     ./networking/networkmanager.nix
@@ -31,8 +33,11 @@
     ./services/greetd.nix
     ./services/pipewire.nix
     ./services/gnome-keyring.nix
+    ./services/docker.nix
 
     ./programs/niri.nix
+    ./programs/nix-ld.nix
+    ./programs/zsh.nix
     ./programs/xwayland-satellite.nix
   ];
 }

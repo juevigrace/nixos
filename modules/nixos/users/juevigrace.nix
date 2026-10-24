@@ -1,8 +1,9 @@
-{ ... }: {
+{ pkgs, ... }: {
   # The one user shared by both machines.
   users.users.juevigrace = {
     isNormalUser = true;
-    extraGroups = ["wheel" "networkmanager"];
+    shell = pkgs.zsh;
+    extraGroups = ["wheel" "networkmanager" "docker"];
 
     # Incoming SSH access to both tear and laila. These are PUBLIC keys.
     # The matching private keys still have to be copied to ~/.ssh by hand.

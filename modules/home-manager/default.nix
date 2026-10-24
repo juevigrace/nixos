@@ -8,7 +8,9 @@
     ./packages/brightnessctl.nix
     ./packages/fd.nix
     ./packages/fzf.nix
+    ./packages/lazydocker.nix
     ./packages/neovim.nix
+    ./packages/neovim-toolchain.nix
     ./packages/opencode.nix
     ./packages/playerctl.nix
     ./packages/ripgrep.nix
@@ -31,6 +33,7 @@
     ./programs/git.nix
     ./programs/ssh.nix
     ./programs/ghostty.nix
+    ./programs/zsh.nix
     ./programs/waypaper.nix
     ./programs/zen.nix
 
@@ -38,6 +41,9 @@
     ./programs/niri
     ./programs/fuzzel
     ./programs/swaylock
+    ./programs/tmux
+    ./programs/btop
+    ./programs/cursor
 
     ./services/mako
     ./services/swayidle.nix

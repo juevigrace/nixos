@@ -18,6 +18,9 @@
     nerd-fonts.symbols-only
   ];
 
+  # Copied from the current Omarchy setup.
+  fonts.fontconfig.localConf = builtins.readFile ./fonts.conf;
+
   fonts.fontconfig.defaultFonts = {
     sansSerif = ["Noto Sans" "DejaVu Sans"];
     serif = ["Noto Serif" "DejaVu Serif"];
