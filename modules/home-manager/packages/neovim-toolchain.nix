@@ -23,8 +23,6 @@
     rustc
     cargo
 
-    hunspell
-
     # Java-based Mason packages (jdtls, kotlin-lsp, gradle-language-server,
     # google-java-format, ktlint) use the SDKMAN JBR configured in
     # modules/home-manager/programs/zsh.nix.
