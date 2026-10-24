@@ -25,16 +25,20 @@
     };
 
     initContent = lib.mkAfter ''
-      # Nix provides jdk21 and gradle by default. SDKMAN is optional and can be
-      # loaded on demand without shadowing the Nix toolchain in every shell.
-      load-sdkman() {
-        export SDKMAN_DIR="$HOME/.sdkman"
-        if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
-          source "$SDKMAN_DIR/bin/sdkman-init.sh"
-        else
-          echo "SDKMAN is not installed at $SDKMAN_DIR" >&2
-        fi
-      }
+      # SDKMAN owns the Java and Gradle versions. It is installed once by
+      # hand because it manages mutable toolchains under ~/.sdkman.
+      export SDKMAN_DIR="$HOME/.sdkman"
+      [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
     '';
   };
+
+  # Make the SDKMAN candidates visible outside interactive zsh too, so Mason
+  # and GUI-launched programs find the JBR and Gradle.
+  home.sessionVariables.JAVA_HOME =
+    "${config.home.homeDirectory}/.sdkman/candidates/java/current";
+
+  home.sessionPath = [
+    "${config.home.homeDirectory}/.sdkman/candidates/java/current/bin"
+    "${config.home.homeDirectory}/.sdkman/candidates/gradle/current/bin"
+  ];
 }

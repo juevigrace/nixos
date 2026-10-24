@@ -31,6 +31,7 @@
       libxrandr
       libxrender
       libxtst
+      zlib
     ];
   };
 }

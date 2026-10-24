@@ -2,3 +2,6 @@
 *.zenbackup
 zen-backup-*
 backup-*.json
+
+# nixos-rebuild build output
+/result

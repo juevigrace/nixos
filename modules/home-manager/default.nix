@@ -11,6 +11,7 @@
     ./packages/lazydocker.nix
     ./packages/neovim.nix
     ./packages/neovim-toolchain.nix
+    ./packages/nixd.nix
     ./packages/opencode.nix
     ./packages/playerctl.nix
     ./packages/ripgrep.nix
@@ -64,7 +65,6 @@
   # programs.direnv.enable = true;
   # programs.fzf.enable = true;
   # programs.bat.enable = true;
-  # programs.btop.enable = true;
   #
   # ⚠ Do NOT enable programs.neovim: ~/.config/nvim is a separate git clone.
 }

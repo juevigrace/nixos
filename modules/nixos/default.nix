@@ -9,13 +9,11 @@
     ./nixpkgs.nix
     ./packages.nix
 
+    ./boot.nix
     ./nix.nix
     ./state.nix
     ./locale.nix
     ./environment.nix
-
-    ./boot/limine.nix
-    ./boot/zram.nix
 
     ./networking/networkmanager.nix
     ./users/juevigrace.nix

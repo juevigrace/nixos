@@ -8,4 +8,7 @@
   };
 
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # zram instead of a disk swap partition.
+  zramSwap.enable = true;
 }

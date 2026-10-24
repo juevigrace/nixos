@@ -3,8 +3,9 @@
   # formatters, linters, and DAP adapters itself.
   home.packages = with pkgs; [
     # Native build toolchain used by cargo, npm, and Go packages.
+    # gcc is the default cc/c++; clang is installed system-wide because both
+    # provide bin/cc and bin/c++, which conflict inside home-manager's buildEnv.
     gcc
-    clang
     gnumake
     pkg-config
 
@@ -22,9 +23,8 @@
     rustc
     cargo
 
-    # Java-based Mason packages: jdtls, kotlin-lsp, gradle-language-server,
-    # google-java-format, and ktlint.
-    jdk21
-    gradle
+    # Java-based Mason packages (jdtls, kotlin-lsp, gradle-language-server,
+    # google-java-format, ktlint) use the SDKMAN JBR configured in
+    # modules/home-manager/programs/zsh.nix.
   ];
 }
