@@ -1,4 +1,4 @@
-{ ... }: {
+{pkgs, ...}: {
   programs.btop = {
     enable = true;
 
@@ -9,5 +9,7 @@
 
     themes.miku = ./miku.theme;
     extraConfig = builtins.readFile ./btop.conf;
+
+    package = pkgs.btop.override {cudaSupport = true;};
   };
 }

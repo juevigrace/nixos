@@ -5,6 +5,7 @@
 { ... }: {
   imports = [
     # CLI tools
+    ./packages/android-tools.nix
     ./packages/brightnessctl.nix
     ./packages/fd.nix
     ./packages/fzf.nix
@@ -17,13 +18,25 @@
     ./packages/ripgrep.nix
     ./packages/tree.nix
     ./packages/wl-clipboard.nix
+    ./packages/yt-dlp.nix
 
     # Desktop apps
+    ./packages/android-studio.nix
+    ./packages/discord.nix
     ./packages/grim.nix
     ./packages/nautilus.nix
     ./packages/satty.nix
     ./packages/slurp.nix
+    ./packages/spotify.nix
     ./packages/swaybg.nix
+    ./packages/tableplus.nix
+    ./packages/vlc.nix
+
+    # Gaming
+    ./packages/heroic.nix
+    ./packages/mangohud.nix
+    ./packages/modrinth.nix
+    ./packages/wine.nix
 
     # Audio tools
     ./packages/pwvucontrol.nix

@@ -35,6 +35,7 @@
 
     ./programs/niri.nix
     ./programs/nix-ld.nix
+    ./programs/steam.nix
     ./programs/zsh.nix
     ./programs/xwayland-satellite.nix
   ];
