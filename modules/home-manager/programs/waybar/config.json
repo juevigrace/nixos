@@ -1,42 +1,89 @@
 {
-  "mainBar": {
-    "layer": "top",
-    "position": "top",
-    "height": 30,
-    "spacing": 4,
-    "modules-left": ["niri/workspaces", "niri/window"],
-    "modules-right": ["pulseaudio", "network", "clock", "tray"],
-    "niri/workspaces": {
-      "format": "{icon}",
-      "format-icons": {
-        "default": "·",
-        "active": "●",
-        "focused": "●",
-        "empty": "·"
-      }
-    },
-    "niri/window": {
-      "format": "{}",
-      "max-length": 60
-    },
-    "pulseaudio": {
-      "format": "{icon} {volume}%",
-      "format-muted": "muted",
-      "format-icons": ["󰕿", "󰖀", "󰕾"],
-      "on-click": "pwvucontrol"
-    },
-    "network": {
-      "format-wifi": "󰤨  {essid}",
-      "format-ethernet": "󰈀  wired",
-      "format-disconnected": "󰤭  offline",
-      "on-click": "nm-connection-editor"
-    },
-    "clock": {
-      "format": "{:%a %d %b  %H:%M}",
-      "tooltip-format": "{calendar}"
-    },
-    "tray": {
-      "spacing": 8
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "spacing": 4,
+  "modules-left": ["niri/workspaces", "niri/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "temperature", "battery", "pulseaudio", "network", "tray"],
+  "niri/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "default": "·",
+      "active": "●",
+      "focused": "●",
+      "empty": "·"
     }
+  },
+  "niri/window": {
+    "format": "{}",
+    "max-length": 50,
+    "tooltip": false
+  },
+  "clock": {
+    "format": "{:%a %d %b  %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<b>{}</b>",
+        "days": "{}",
+        "weekdays": "<b>{}</b>",
+        "today": "<b><u>{}</u></b>"
+      }
+    }
+  },
+  "cpu": {
+    "interval": 2,
+    "format": "󰻠 {usage}%",
+    "tooltip": false,
+    "on-click": "ghostty -e btop"
+  },
+  "memory": {
+    "interval": 2,
+    "format": "󰍛 {percentage}%",
+    "tooltip-format": "{used:0.1f}G / {total:0.1f}G",
+    "on-click": "ghostty -e btop"
+  },
+  "temperature": {
+    "interval": 2,
+    "critical-threshold": 80,
+    "format": "󰔏 {temperatureC}°C",
+    "format-critical": "󰸁 {temperatureC}°C",
+    "tooltip": false
+  },
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰂄 {capacity}%",
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "tooltip-format": "{timeTo} {power}W"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 muted",
+    "format-icons": ["󰕿", "󰖀", "󰕾"],
+    "on-click": "pwvucontrol",
+    "tooltip-format": "{desc}"
+  },
+  "network": {
+    "interval": 3,
+    "format-wifi": "󰤨  {essid}",
+    "format-ethernet": "󰈀  wired",
+    "format-disconnected": "󰤭  offline",
+    "tooltip-format": "{ifname} · {ipaddr}/{cidr}",
+    "on-click": "nm-connection-editor"
+  },
+  "tray": {
+    "spacing": 8,
+    "icon-size": 16
   }
 }

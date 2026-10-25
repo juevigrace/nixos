@@ -1,0 +1,112 @@
+{
+  "components": {
+    "wallpaperSelector": {
+      "enabled": true
+    }
+  },
+  "features": {
+    "matugen": true
+  },
+  "general": {
+    "hoverSelects": false,
+    "randomRotate": false,
+    "uiScale": 1.5
+  },
+  "integrations": [
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Waybar",
+      "output": "~/.config/waybar/colors.css",
+      "profile": "",
+      "reload": "pkill -USR2 -x waybar || true",
+      "template": "waybar.css"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Niri",
+      "output": "~/.config/niri/colors.kdl",
+      "profile": "",
+      "reload": "",
+      "template": "niri-colors.kdl"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Ghostty",
+      "output": "~/.config/ghostty/colors.conf",
+      "profile": "",
+      "reload": "pkill -USR2 -x ghostty || true",
+      "template": "ghostty.conf"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "btop",
+      "output": "~/.config/btop/themes/skwd.theme",
+      "profile": "",
+      "reload": "",
+      "template": "btop.theme"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Fuzzel",
+      "output": "~/.config/fuzzel/colors.ini",
+      "profile": "",
+      "reload": "",
+      "template": "fuzzel.ini"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Mako",
+      "output": "~/.config/mako/colors",
+      "profile": "",
+      "reload": "makoctl reload || true",
+      "template": "mako.conf"
+    },
+    {
+      "enabled": true,
+      "livePreview": false,
+      "name": "Swaylock",
+      "output": "~/.config/swaylock/colors.conf",
+      "profile": "",
+      "reload": "",
+      "template": "swaylock-colors.conf"
+    }
+  ],
+  "lockScreens": {
+    "mode": "follow",
+    "swaylock": true
+  },
+  "matugen": {
+    "schemeType": "scheme-fidelity"
+  },
+  "motion": {
+    "filterSwapSpeed": "standard"
+  },
+  "niri": {
+    "backdropBlurStatic": false,
+    "backdropTheme": "Catppuccin",
+    "overviewBackdrop": false
+  },
+  "performance": {
+    "batterySaver": false,
+    "batteryWallpaperPerformance": false
+  },
+  "system": {
+    "restoreOnStartup": true
+  },
+  "theme": {
+    "authority": "skwd",
+    "engine": "matugen",
+    "policy": "wallpaper",
+    "style": "vibrant",
+    "targets": []
+  },
+  "transition": {
+    "preview": false
+  }
+}

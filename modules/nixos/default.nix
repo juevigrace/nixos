@@ -34,6 +34,7 @@
     ./services/docker.nix
 
     ./programs/niri.nix
+    ./programs/skwd-wall.nix
     ./programs/nix-ld.nix
     ./programs/steam.nix
     ./programs/zsh.nix

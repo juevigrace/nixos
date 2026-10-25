@@ -1,0 +1,13 @@
+// Laptop (laila): 1080p 60 Hz internal panel.
+//
+// The mode is intentionally left at Niri's preferred mode so a slightly
+// different refresh-rate string in the panel's EDID cannot make this block
+// fail. If `niri msg outputs` on laila reports a different connector name,
+// change "eDP-1" below; an unmatched block is harmless and Niri falls back to
+// its automatic output configuration.
+output "eDP-1" {
+    scale 1
+    transform "normal"
+    position x=0 y=0
+    focus-at-startup
+}

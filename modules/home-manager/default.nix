@@ -9,6 +9,7 @@
     # CLI tools
     ./packages/android-tools.nix
     ./packages/brightnessctl.nix
+    ./packages/caligula.nix
     ./packages/fd.nix
     ./packages/fzf.nix
     ./packages/lazydocker.nix
@@ -57,6 +58,7 @@
     ./programs/niri
     ./programs/fuzzel
     ./programs/swaylock
+    ./programs/skwd-wall
     ./programs/tmux
     ./programs/btop
     ./programs/cursor
@@ -71,6 +73,11 @@
 
   # Reload systemd user units when home-manager changes them.
   systemd.user.startServices = "sd-switch";
+
+  # The Stylix Home Manager module is imported above, but Stylix itself is not
+  # enabled yet. Its default package overlays conflict with
+  # `home-manager.useGlobalPkgs = true`, so turn them off explicitly.
+  stylix.overlays.enable = false;
 
   # Optional programs. Uncomment the setting and add a matching module/import
   # when you want it.

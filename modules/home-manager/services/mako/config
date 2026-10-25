@@ -1,14 +1,12 @@
+include=~/.config/mako/colors
 max-visible=5
 default-timeout=5000
 anchor=top-right
 margin=8
 width=320
 height=120
-border-radius=8
-background-color=#1e1e2e
-text-color=#cdd6f4
-border-color=#89b4fa
-border-size=2
+border-radius=0
+border-size=1
 font=JetBrainsMono Nerd Font 10
 icons=1
 markup=1

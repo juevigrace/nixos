@@ -1,3 +1,5 @@
+@import url("colors.css");
+
 * {
   font-family: "JetBrainsMono Nerd Font";
   font-size: 12px;
@@ -5,48 +7,127 @@
 }
 
 window#waybar {
-  background-color: #1e1e2e;
-  color: #cdd6f4;
+  background-color: alpha(@surface, 0.96);
+  color: @on_surface;
+  border-bottom: 1px solid @outline_variant;
+}
+
+#workspaces {
+  padding: 0 4px;
 }
 
 #workspaces button {
-  padding: 0 6px;
+  padding: 0 7px;
   margin: 0;
+  min-width: 18px;
   border: none;
   border-radius: 0;
   background: transparent;
-  color: #6c7086;
+  color: @outline;
 }
 
-#workspaces button.active {
-  color: #89b4fa;
+#workspaces button.empty {
+  color: @outline;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+  color: @primary;
+  background-color: alpha(@primary, 0.12);
 }
 
 #workspaces button.urgent {
-  color: #f38ba8;
+  color: @error;
+  background-color: alpha(@error, 0.12);
+}
+
+#workspaces button:hover {
+  color: @on_surface;
+  background-color: alpha(@primary, 0.08);
 }
 
 #window {
   padding: 0 8px;
-  color: #cdd6f4;
+  color: @on_surface_variant;
 }
 
-#clock,
+#clock {
+  padding: 0 10px;
+  color: @primary;
+  font-weight: 600;
+}
+
+#cpu,
+#memory,
+#temperature,
+#battery,
 #pulseaudio,
 #network,
 #tray {
   padding: 0 8px;
+  color: @on_surface;
 }
 
-#pulseaudio.muted {
-  color: #f38ba8;
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#pulseaudio:hover,
+#network:hover {
+  color: @primary;
+  background-color: alpha(@primary, 0.08);
 }
 
+#battery.charging,
+#battery.plugged {
+  color: @primary;
+}
+
+#battery.warning,
+#temperature.warning {
+  color: @tertiary;
+}
+
+#battery.critical,
+#temperature.critical {
+  color: @error;
+}
+
+#pulseaudio.muted,
 #network.disconnected {
-  color: #f38ba8;
+  color: @error;
 }
 
-#tray menu {
-  background-color: #1e1e2e;
-  color: #cdd6f4;
+#tray {
+  padding-right: 10px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: alpha(@error, 0.15);
+}
+
+tooltip {
+  background-color: @surface_container_high;
+  border: 1px solid @outline;
+  border-radius: 0;
+}
+
+tooltip label {
+  color: @on_surface;
+}
+
+menu {
+  background-color: @surface_container;
+  color: @on_surface;
+  border: 1px solid @outline;
+  border-radius: 0;
+}
+
+menu menuitem:hover {
+  background-color: @primary;
+  color: @on_primary;
 }

@@ -28,6 +28,7 @@ modules/nixos/
     fonts.nix
   programs/
     niri.nix                      # system-level Niri
+    skwd-wall.nix                 # Wallhaven wallpaper picker + daemon
     ssh-agent.nix                 # system SSH agent
     xwayland-satellite.nix
   services/
@@ -43,6 +44,7 @@ modules/home-manager/
   default.nix                     # imports every shared user module
   packages/                       # one file per package-only tool
     brightnessctl.nix
+    caligula.nix
     fd.nix
     fzf.nix
     grim.nix
@@ -75,9 +77,15 @@ modules/home-manager/
     fuzzel/
       default.nix
       fuzzel.ini
+    skwd-wall/
+      default.nix
+      config.json
+      matugen/templates/
+      wallpapers/
     swaylock/
       default.nix
       config
+      colors.conf
   services/
     mako/
       default.nix
@@ -113,10 +121,16 @@ Both hosts use the same Niri desktop:
 - **Compositor:** Niri, with the Nautilus file chooser (`useNautilus = true`).
 - **Terminal:** Ghostty (`Mod+T`).
 - **Launcher:** fuzzel (`Mod+D`).
-- **Bar:** Waybar with the native `niri/workspaces` and `niri/window` modules.
-- **Notifications:** mako. **Lock:** swaylock (`Super+Alt+L`). **Idle:** swayidle.
-- **Wallpaper:** Waypaper (`Mod+Shift+W`), using the `swaybg` backend. It
-  restores the last wallpaper at login.
+- **Bar:** Waybar with the native `niri/workspaces` and `niri/window` modules,
+  a centred clock, and CPU, memory, temperature, volume, network, battery, and
+  tray modules on the right.
+- **Notifications:** mako. **Lock:** swaylock-effects, using the current
+  skwd-wall wallpaper blurred with `effect-blur` (`Super+Alt+L`). **Idle:**
+  swayidle locks after 1 hour and turns the displays off after 1 hour 15
+  minutes.
+- **Wallpaper:** skwd-wall (`Mod+Shift+W`). Its built-in picker has a Wallhaven
+  browser, and `skwd-walld` restores the last wallpaper at login. Waypaper and
+  swaybg are still installed as a fallback but are no longer started.
 - **Audio:** PipeWire + WirePlumber. `pwvucontrol` is the GUI mixer and
   `wiremix` is the TUI; open Wiremix with `Mod+Shift+A` to select the rear or
   front microphone port. Clicking the volume module in Waybar opens
@@ -137,7 +151,9 @@ The real config files live next to their app module, for example
 `config.lib.file.mkOutOfStoreSymlink`. Editing either path edits the tracked
 file; a rebuild is only needed for package/service changes. If you move the
 repo out of `~/Projects/nixos`, update the `liveConfig` path at the top of the
-app modules that link config files (Waybar, Niri, Fuzzel, Swaylock, and Mako).
+app modules that link config files (Waybar, Niri, Fuzzel, Mako, and skwd-wall).
+Swaylock is the exception: its config is seeded as a writable copy so
+skwd-wall can add the current wallpaper without writing through a Nix symlink.
 
 Useful reloads after editing:
 
@@ -192,29 +208,40 @@ before rebuilding.
 
 ### Wallpaper and system colours
 
-Aether is an Omarchy-specific tool, not a nixpkgs package, so it cannot simply
-be installed here. Waypaper can still use the Aether wallpaper: pick it once
-from the Waypaper window, and `spawn-at-startup "waypaper" "--restore"` will
-restore it on later logins. Waypaper keeps its own config/state under
-`~/.config/waypaper/`; that state is intentionally not managed by Nix.
+Wallpaper selection is handled by skwd-wall. It has a built-in Wallhaven
+browser and derives a Material You palette from the selected image with
+Matugen.
 
-The current Waybar/mako/fuzzel/swaylock colours are a static Catppuccin-like
-palette. For colours that follow the wallpaper, the practical options are:
+The picker config and all Matugen templates are tracked under
+`modules/home-manager/programs/skwd-wall/` and linked live into
+`~/.config/skwd-wall-v2/`. The currently selected wallpaper is kept in the
+repo at `wallpapers/wallhaven-6l56mx.png` and linked to
+`~/Pictures/Wallpapers/wallhaven-6l56mx.png`; Home Manager also seeds the
+skwd cache so the wallpaper is restored on a fresh install.
 
-1. **Stylix** — the Nix-native choice. Add the Stylix flake input and modules,
-   give it a base16 scheme or wallpaper, and it themes Waybar, mako, fuzzel,
-   Ghostty, swaylock, and GTK. It has no Niri target, so Niri's focus-ring
-   colours stay in `niri/config.kdl`.
-2. **Matugen** — Material You colours generated from the current wallpaper.
-   Set Waypaper's post-command to run `matugen image <wallpaper>` and use
-   Matugen templates for the apps you care about. More moving parts, but the
-   closest match to Aether's per-wallpaper behaviour.
-3. **Wallust** — similar to Matugen, with a simpler template system.
-4. **Static theme** — keep the current files and change the hex values by
-   hand, or switch to a packaged theme such as Catppuccin/Nord.
+Matugen writes colours into separate generated files, so it never overwrites
+the repo-managed layout files:
 
-Stylix is the best fit if you want everything declarative; Matugen or Wallust
-is better if you want colours to change every time you pick a wallpaper.
+- Waybar: `~/.config/waybar/colors.css`
+- Niri: `~/.config/niri/colors.kdl`
+- Ghostty: `~/.config/ghostty/colors.conf`
+- btop: `~/.config/btop/themes/skwd.theme`
+- Fuzzel: `~/.config/fuzzel/colors.ini`
+- mako: `~/.config/mako/colors`
+- Swaylock: `~/.config/swaylock/colors.conf`
+
+Each generated file has a Catppuccin fallback in the repo that is copied only
+when the generated file does not exist yet. `swaylock-themed` merges the
+generated palette with skwd-wall's exported current wallpaper, and
+swaylock-effects applies `effect-blur=20x3` so it is obvious the session is
+locked. The greetd greeter is still the text-only `tuigreet`, so it does not
+have a wallpaper.
+
+### Docker
+
+Docker uses the standard rootful daemon. The user is in the `docker` group, so
+`docker` commands work without `sudo`, but membership in that group is
+effectively root-equivalent. This is not rootless Docker.
 
 
 ## First install

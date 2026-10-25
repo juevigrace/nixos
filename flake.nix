@@ -29,6 +29,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Wallpaper picker/daemon with a built-in Wallhaven browser and Matugen
+    # integration. It ships prebuilt binaries, so this does not compile Rust.
+    skwd-wall = {
+      url = "github:liixini/skwd-wall/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";

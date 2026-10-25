@@ -1,18 +1,21 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }:
+let
+  lock = "${config.programs.swaylock.package}/bin/swaylock-themed";
+in {
   services.swayidle = {
     enable = true;
     timeouts = [
       {
-        timeout = 300;
-        command = "${pkgs.swaylock}/bin/swaylock -f";
+        timeout = 3600; # 1 hour
+        command = "${lock} -f";
       }
       {
-        timeout = 600;
+        timeout = 4500; # 1 hour 15 minutes
         command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
       }
     ];
     events = {
-      "before-sleep" = "${pkgs.swaylock}/bin/swaylock -f";
+      "before-sleep" = "${lock} -f";
     };
   };
 }
