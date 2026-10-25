@@ -26,6 +26,7 @@
     ./hardware/graphics.nix
     ./hardware/fonts.nix
     ./services/upower.nix
+    ./services/power.nix
     ./services/gvfs.nix
     ./services/udisks2.nix
     ./services/greetd.nix
