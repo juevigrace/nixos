@@ -215,8 +215,8 @@ Matugen.
 The picker config and all Matugen templates are tracked under
 `modules/home-manager/programs/skwd-wall/` and linked live into
 `~/.config/skwd-wall-v2/`. The currently selected wallpaper is kept in the
-repo at `wallpapers/wallhaven-6l56mx.png` and linked to
-`~/Pictures/Wallpapers/wallhaven-6l56mx.png`; Home Manager also seeds the
+repo at `wallpapers/wallhaven-r735gq.png` and linked to
+`~/Pictures/Wallpapers/wallhaven-r735gq.png`; Home Manager also seeds the
 skwd cache so the wallpaper is restored on a fresh install.
 
 Matugen writes colours into separate generated files, so it never overwrites
@@ -242,7 +242,6 @@ have a wallpaper.
 Docker uses the standard rootful daemon. The user is in the `docker` group, so
 `docker` commands work without `sudo`, but membership in that group is
 effectively root-equivalent. This is not rootless Docker.
-
 
 ## First install
 
@@ -270,10 +269,10 @@ sudo ./scripts/install.sh tear /dev/sda /path/to/nixos
 The script asks you to type `WIPE` before it touches the disk. The shared
 layout is:
 
-| Partition | Size | Use |
-|---|---|---|
-| `...1` | 1 GiB | FAT32 ESP, mounted at `/boot` |
-| `...2` | rest | Btrfs, mounted at `/` |
+| Partition | Size  | Use                           |
+| --------- | ----- | ----------------------------- |
+| `...1`    | 1 GiB | FAT32 ESP, mounted at `/boot` |
+| `...2`    | rest  | Btrfs, mounted at `/`         |
 
 Btrfs subvolumes: `@`, `@home`, `@nix`, `@log`, `@snapshots`. There is no swap
 partition; `zramSwap` is enabled.
@@ -359,6 +358,7 @@ The git signing key is `~/.ssh/personal/id_ed25519.pub`. Add it to GitHub as a
 **signing key** as well as an authentication key.
 
 After reinstalling a host, its host key changes. Remove the stale entry:
+
 ```sh
 ssh-keygen -R laila
 ssh-keygen -R 192.168.1.196
@@ -376,4 +376,3 @@ The hardware files are placeholders until NixOS is installed, so a real
 `nix flake check` fails the root-filesystem assertion before that point. After
 `nixos-generate-config` has replaced both placeholders, the check works
 normally.
-
