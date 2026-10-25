@@ -330,11 +330,20 @@ install on `/dev/sda` is erased by the install script.
 
 ### After first login
 
-- Restore the SSH private keys with correct permissions:
+- Restore the SSH **private** keys with correct permissions. Copy only the
+  key files, not the whole `~/.ssh` directory: `~/.ssh/config` is managed by
+  Home Manager, and an old `config` symlink from a backup will point at a
+  store path that no longer exists (see “Stale `~/.ssh/config` link” below).
   ```sh
   install -d -m 700 ~/.ssh
+  install -d -m 700 ~/.ssh/personal
   install -m 600 /path/to/backup/personal/id_ed25519 ~/.ssh/personal/id_ed25519
   install -m 600 /path/to/backup/lan ~/.ssh/lan
+  rm -f ~/.ssh/config
+  ```
+  Then add the keys to the agent (optional; SSH also reads them directly):
+  ```sh
+  ssh-add ~/.ssh/lan ~/.ssh/personal/id_ed25519
   ```
 - Clone the nvim config (it is intentionally not managed by Nix):
   ```sh
@@ -343,6 +352,10 @@ install on `/dev/sda` is erased by the install script.
   The `neovim` program itself is installed by home-manager.
 
 ## SSH
+
+Private keys are **not** in this repo; they live in `~/.ssh` and must be
+restored from a backup on a fresh install. Everything else (client config,
+agent, incoming-access public keys) is declared here.
 
 `programs.ssh` writes `~/.ssh/config` with:
 
@@ -354,8 +367,94 @@ Both public keys are in `users.users.juevigrace.openssh.authorizedKeys.keys`,
 so either machine accepts either key. The SSH server is keys-only
 (`PasswordAuthentication = false`).
 
-The git signing key is `~/.ssh/personal/id_ed25519.pub`. Add it to GitHub as a
-**signing key** as well as an authentication key.
+### Agent
+
+`programs.ssh.startAgent = true` starts `ssh-agent` at login. The agent begins
+each login empty, so add the keys once per session when you want them cached:
+
+```sh
+ssh-add ~/.ssh/lan ~/.ssh/personal/id_ed25519
+ssh-add -l
+```
+
+Both keys are unencrypted, so SSH can also read them straight from `~/.ssh`
+without the agent; `git push` works either way. `AddKeysToAgent = yes` is set
+for hosts that need a passphrase prompt.
+
+### Validate the private/public pairs
+
+The public keys stored in the repo must match the private keys restored on
+the machine:
+
+```sh
+ssh-keygen -y -f ~/.ssh/lan
+ssh-keygen -y -f ~/.ssh/personal/id_ed25519
+```
+
+Each output must be identical to `~/.ssh/lan.pub` and
+`~/.ssh/personal/id_ed25519.pub` (apart from the trailing comment).
+
+If a private key was rotated, regenerate its public half:
+
+```sh
+ssh-keygen -y -f ~/.ssh/lan > ~/.ssh/lan.pub
+ssh-keygen -y -f ~/.ssh/personal/id_ed25519 > ~/.ssh/personal/id_ed25519.pub
+```
+
+Then replace the matching `ssh-ed25519 ...` lines in
+`users.users.juevigrace.openssh.authorizedKeys.keys`
+(`modules/nixos/users/juevigrace.nix`) and rebuild, otherwise incoming SSH to
+either machine will reject the new key.
+
+### Register the keys with GitHub
+
+GitHub needs the public half of the personal key twice — once as an
+**authentication** key and once as a **signing** key:
+
+1. Copy the key:
+   ```sh
+   cat ~/.ssh/personal/id_ed25519.pub
+   ```
+2. GitHub → Settings → SSH and GPG keys → **New SSH key**.
+   - Add it with key type **Authentication key**.
+   - Add it again with key type **Signing key** (git signs commits with it,
+     see `modules/home-manager/programs/git.nix`).
+3. Verify:
+   ```sh
+   ssh -T git@github.com
+   ```
+   A successful result prints `Hi juevigrace! You've successfully
+   authenticated, but GitHub does not provide shell access.` A
+   `Permission denied (publickey)` means the key is not registered on GitHub
+   or SSH is not reading it (see the next section).
+
+### Stale `~/.ssh/config` link
+
+Home Manager links `~/.ssh/config` to a path in the Nix store. If `~/.ssh`
+was restored from a backup, that link can point at a store path that no
+longer exists. SSH then silently ignores the host blocks and falls back to
+`~/.ssh/id_ed25519`, so GitHub says `Permission denied (publickey)` even
+though the key itself is fine.
+
+Symptoms:
+
+```sh
+cat ~/.ssh/config
+# cat: /home/juevigrace/.ssh/config: No such file or directory
+ssh -G github.com | grep -i identityfile
+# identityfile ~/.ssh/id_ed25519 ...  (the personal key is missing)
+```
+
+Fix it by removing the dangling link, then rebuild or re-run the Home Manager
+activation so it links the current generation:
+
+```sh
+rm -f ~/.ssh/config
+./scripts/rebuild
+
+# or, without a full rebuild
+sudo systemctl restart home-manager-juevigrace
+```
 
 After reinstalling a host, its host key changes. Remove the stale entry:
 
