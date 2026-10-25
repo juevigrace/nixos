@@ -5,7 +5,9 @@
 
     settings = {
       # Matugen writes this file; the repo contains the Catppuccin fallback.
-      "config-file" = "${config.home.homeDirectory}/.config/ghostty/colors.conf";
+      # The `?` prefix tells Ghostty to ignore it if it does not exist yet
+      # (e.g. on the first activation, before skwdWallSeed has run).
+      "config-file" = "?${config.home.homeDirectory}/.config/ghostty/colors.conf";
 
       "font-family" = "JetBrainsMono Nerd Font";
       "font-style" = "Regular";

@@ -37,7 +37,16 @@ in {
 
   # Matugen writes these files. Seed Catppuccin fallbacks only when they do
   # not exist so a wallpaper change is not undone on the next rebuild.
-  home.activation.skwdWallSeed = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  #
+  # This must run after linkGeneration but before onFilesChange/reloadSystemd:
+  # the onChange hooks validate/reload programs that read these files (Ghostty
+  # in particular), and sd-switch may start Waybar before the seed would
+  # otherwise have run. On a fresh home the missing files would make the whole
+  # activation abort.
+  home.activation.skwdWallSeed = lib.hm.dag.entryBetween
+    ["onFilesChange" "reloadSystemd"]
+    ["linkGeneration"]
+    ''
         ${seed ../waybar/colors.css "${home}/.config/waybar/colors.css"}
         ${seed ../niri/colors.kdl "${home}/.config/niri/colors.kdl"}
         ${seed ../ghostty/colors.conf "${home}/.config/ghostty/colors.conf"}
