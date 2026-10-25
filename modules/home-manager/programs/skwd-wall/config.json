@@ -1,6 +1,7 @@
 {
   "components": {
     "wallpaperSelector": {
+      "displayMode": "slices",
       "enabled": true
     }
   },
@@ -82,7 +83,8 @@
     "swaylock": true
   },
   "matugen": {
-    "schemeType": "scheme-fidelity"
+    "colorIndex": 3,
+    "schemeType": "scheme-smart"
   },
   "motion": {
     "filterSwapSpeed": "standard"
@@ -102,6 +104,7 @@
   "theme": {
     "authority": "skwd",
     "engine": "matugen",
+    "mode": "dark",
     "policy": "wallpaper",
     "style": "vibrant",
     "targets": []
