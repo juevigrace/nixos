@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   # System-wide packages. These are available to every user and to services.
   #
   # User-level CLI tools belong in modules/home-manager/packages/ instead.

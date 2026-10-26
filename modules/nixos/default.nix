@@ -33,6 +33,7 @@
     ./services/pipewire.nix
     ./services/gnome-keyring.nix
     ./services/docker.nix
+    ./services/xdg.nix
 
     ./programs/niri.nix
     ./programs/skwd-wall.nix

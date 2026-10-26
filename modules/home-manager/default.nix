@@ -52,6 +52,8 @@
     ./programs/ghostty.nix
     ./programs/zsh.nix
     ./programs/waypaper.nix
+    ./programs/chromium.nix
+    ./programs/firefox.nix
     ./programs/zen.nix
 
     ./programs/waybar
@@ -65,6 +67,7 @@
     ./programs/cursor
 
     ./services/mako
+    ./services/xdg.nix
     ./services/swayidle.nix
     ./services/cliphist.nix
     ./services/polkit-gnome.nix
