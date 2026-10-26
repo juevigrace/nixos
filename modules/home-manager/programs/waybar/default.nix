@@ -21,4 +21,12 @@ in {
     source = liveConfig "programs/waybar/style.css";
     onChange = "${pkgs.procps}/bin/pkill -u $USER -USR2 waybar || true";
   };
+  xdg.configFile."waybar/power-menu.xml" = {
+    source = liveConfig "programs/waybar/power-menu.xml";
+    onChange = "${pkgs.procps}/bin/pkill -u $USER -USR2 waybar || true";
+  };
+  xdg.configFile."waybar/battery-menu.xml" = {
+    source = liveConfig "programs/waybar/battery-menu.xml";
+    onChange = "${pkgs.procps}/bin/pkill -u $USER -USR2 waybar || true";
+  };
 }

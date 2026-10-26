@@ -59,6 +59,7 @@
     ./programs/fuzzel
     ./programs/swaylock
     ./programs/skwd-wall
+    ./programs/skwd-theme-sync
     ./programs/tmux
     ./programs/btop
     ./programs/cursor

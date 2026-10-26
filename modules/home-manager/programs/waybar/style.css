@@ -51,6 +51,12 @@ window#waybar {
   color: @on_surface_variant;
 }
 
+#custom-power {
+  padding: 0 9px;
+  color: @primary;
+  font-size: 15px;
+}
+
 #clock {
   padding: 0 10px;
   color: @primary;
@@ -68,6 +74,7 @@ window#waybar {
   color: @on_surface;
 }
 
+#custom-power:hover,
 #cpu:hover,
 #memory:hover,
 #temperature:hover,
@@ -75,6 +82,10 @@ window#waybar {
 #network:hover {
   color: @primary;
   background-color: alpha(@primary, 0.08);
+}
+
+#battery {
+  padding-right: 10px;
 }
 
 #battery.charging,
@@ -125,6 +136,10 @@ menu {
   color: @on_surface;
   border: 1px solid @outline;
   border-radius: 0;
+}
+
+menu menuitem {
+  padding: 4px 12px;
 }
 
 menu menuitem:hover {

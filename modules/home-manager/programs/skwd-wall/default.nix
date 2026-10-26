@@ -29,12 +29,10 @@ in {
   };
 
   # The currently selected wallpaper is copied into the repo so a fresh
-  # install can restore it.
-  home.file."Pictures/Wallpapers/wallhaven-r735gq.png" = {
-    source = ./wallpapers/wallhaven-r735gq.png;
-    force = true;
-  };
-
+  # install can restore it. It must be a real file: the skwd scanner ignores
+  # symlinks, which made the picker report an empty library even though the
+  # daemon could still restore the wallpaper from the cache.
+  #
   # Matugen writes these files. Seed Catppuccin fallbacks only when they do
   # not exist so a wallpaper change is not undone on the next rebuild.
   #
@@ -56,6 +54,16 @@ in {
 
         cache_dir="${home}/.cache/skwd-wall-v2"
         wallpaper="${home}/Pictures/Wallpapers/wallhaven-r735gq.png"
+
+        # The skwd scanner deliberately skips symlinks. Replace the old
+        # Home Manager link with a real seeded copy, but never overwrite a
+        # wallpaper the user has already chosen.
+        if [ -L "$wallpaper" ] || [ ! -e "$wallpaper" ]; then
+          mkdir -p "$(dirname "$wallpaper")"
+          rm -f "$wallpaper"
+          install -m 0644 ${./wallpapers/wallhaven-r735gq.png} "$wallpaper"
+        fi
+
         mkdir -p "$cache_dir"
 
         if [ ! -e "$cache_dir/last-wallpaper.json" ]; then

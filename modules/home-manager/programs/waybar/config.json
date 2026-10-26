@@ -3,9 +3,9 @@
   "position": "top",
   "height": 30,
   "spacing": 4,
-  "modules-left": ["niri/workspaces", "niri/window"],
+  "modules-left": ["custom/power", "niri/workspaces", "niri/window"],
   "modules-center": ["clock"],
-  "modules-right": ["cpu", "memory", "temperature", "battery", "pulseaudio", "network", "tray"],
+  "modules-right": ["cpu", "memory", "temperature", "pulseaudio", "network", "tray", "battery"],
   "niri/workspaces": {
     "format": "{icon}",
     "format-icons": {
@@ -19,6 +19,19 @@
     "format": "{}",
     "max-length": 50,
     "tooltip": false
+  },
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/power-menu.xml",
+    "menu-actions": {
+      "lock": "swaylock-themed -f",
+      "suspend": "systemctl suspend",
+      "logout": "niri msg action quit --skip-confirmation",
+      "reboot": "systemctl reboot",
+      "shutdown": "systemctl poweroff"
+    }
   },
   "clock": {
     "format": "{:%a %d %b  %H:%M}",
@@ -65,7 +78,14 @@
     "format-charging": "󰂄 {capacity}%",
     "format-plugged": "󰂄 {capacity}%",
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-    "tooltip-format": "{timeTo} {power}W"
+    "tooltip-format": "{timeTo} {power}W",
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/battery-menu.xml",
+    "menu-actions": {
+      "performance": "powerprofilesctl set performance",
+      "balanced": "powerprofilesctl set balanced",
+      "power-saver": "powerprofilesctl set power-saver"
+    }
   },
   "pulseaudio": {
     "format": "{icon} {volume}%",
