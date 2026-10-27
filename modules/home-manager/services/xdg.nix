@@ -16,5 +16,10 @@
     xdg-utils
     desktop-file-utils
     shared-mime-info
+
+    # xdg-open and desktop integrations expect gio/gdbus on PATH. NixOS ships
+    # libglib without its binaries in the system profile, so add the bin output
+    # explicitly.
+    glib.bin
   ];
 }

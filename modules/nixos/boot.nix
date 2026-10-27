@@ -1,4 +1,12 @@
-{ ... }: {
+{ pkgs, ... }: {
+  # Track the latest upstream stable kernel. The stable package set currently
+  # ships NVIDIA 595.71.05, whose kernel modules do not compile against Linux
+  # 7.3; unstable carries the matching 595.104.02 driver. Using the unstable
+  # kernel package set keeps the kernel and every out-of-tree module (including
+  # NVIDIA) built against the same kernel while the rest of the system remains
+  # on stable.
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+
   # Both machines use Limine on the ESP mounted at /boot.
   boot.loader.limine = {
     enable = true;

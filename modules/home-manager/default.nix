@@ -55,6 +55,7 @@
     ./programs/chromium.nix
     ./programs/firefox.nix
     ./programs/zen.nix
+    ./programs/obs-studio
 
     ./programs/waybar
     ./programs/niri
@@ -64,6 +65,7 @@
     ./programs/skwd-theme-sync
     ./programs/tmux
     ./programs/btop
+    ./programs/fastfetch.nix
     ./programs/cursor
 
     ./services/mako

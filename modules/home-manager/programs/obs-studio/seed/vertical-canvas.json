@@ -1,0 +1,25 @@
+{
+  "canvas": [
+    {
+      "width": 1080,
+      "height": 1920,
+      "preview_disabled": false,
+      "virtual_cam_warned": false,
+      "streaming_video_bitrate": 6000,
+      "streaming_match_main": false,
+      "audio_bitrate": 160,
+      "backtrack": false,
+      "stream_advanced_settings": false,
+      "record_advanced_settings": false,
+      "stream_outputs": [
+        {
+          "name": "TikTok",
+          "stream_server": "",
+          "stream_key": "",
+          "enabled": true,
+          "advanced": false
+        }
+      ]
+    }
+  ]
+}

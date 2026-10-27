@@ -55,11 +55,9 @@
 
       if [ "$mode" = "dark" ]; then
         prefer=1
-        scheme=2
         dconfScheme="'prefer-dark'"
       else
         prefer=0
-        scheme=3
         dconfScheme="'prefer-light'"
       fi
 
@@ -76,7 +74,6 @@
             printf 'gtk-icon-theme-name=%s\n' '${gtkIconTheme}'
           ''}
           printf 'gtk-application-prefer-dark-theme=%s\n' "$prefer"
-          printf 'gtk-interface-color-scheme=%s\n' "$scheme"
         } > "$tmp"
         chmod 0644 "$tmp"
         rm -f "$dest"

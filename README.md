@@ -67,6 +67,7 @@ modules/home-manager/
     ghostty.nix
     waypaper.nix
     zen.nix                       # Zen Browser
+    obs-studio/                   # OBS + Aitum multistream/vertical
     waybar/
       default.nix
       config.json
@@ -197,6 +198,15 @@ If Firefox Sync does not restore your Spaces/pins, the same module supports
 declarative `profiles.default.spaces` and `.pins` in `zen.nix`. Close Zen
 before rebuilding.
 
+### OBS and streaming
+
+OBS is configured with Aitum Multistream and Aitum Vertical Canvas for
+horizontal Twitch/Kick/YouTube/TikTok output plus a 1080x1920 vertical canvas.
+The starting profile, scene collection, audio sources, and destination entries
+are seeded on first launch; stream keys stay local and must be entered in the
+OBS UI. See `modules/home-manager/programs/obs-studio/README.md` for the
+startup order and the exact key locations.
+
 ### GPU
 
 - `tear`: NVIDIA open kernel modules with modesetting (`hosts/tear/default.nix`).
@@ -205,6 +215,24 @@ before rebuilding.
   ```sh
   nvidia-offload <command>
   ```
+
+### Kernel
+
+Both hosts use `boot.kernelPackages = pkgs.unstable.linuxPackages_latest` from
+`modules/nixos/boot.nix`, currently Linux 7.3. The stable package set's NVIDIA
+595.71.05 modules do not compile against 7.3, so the kernel and its
+out-of-tree modules come from the unstable set (NVIDIA 595.104.02) while the
+rest of the system remains on stable.
+
+The unstable `nvidia-smi` binary is malformed on this release, so
+`modules/nixos/hardware/nvidia.nix` installs a small compatibility wrapper. It
+runs the stable 595.71.05 `nvidia-smi` against the unstable 595.104.02 NVML
+library. Monitoring works and reports the installed 595.104.02 driver; remove
+the wrapper once the unstable package ships a working `nvidia-smi`.
+
+The previous NixOS generation remains available from Limine. If a new kernel
+regresses, select the older generation at boot or roll back with
+`sudo nixos-rebuild --rollback switch`.
 
 ### Wallpaper and system colours
 
