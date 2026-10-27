@@ -18,5 +18,8 @@
     # SQLite CLI + shared library.
     sqlite
     sqlite.out
+
+    # Legacy libcrypt ABI compatibility.
+    libxcrypt-legacy
   ];
 }
