@@ -14,5 +14,9 @@
     wget
     zip
     unzip
+
+    # SQLite CLI + shared library.
+    sqlite
+    sqlite.out
   ];
 }
