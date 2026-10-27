@@ -5,12 +5,6 @@
     enable = true;
     setAsDefaultBrowser = true;
 
-    # Android Studio exports a broad LD_LIBRARY_PATH when it launches a
-    # browser. Zen inherits it and then tries to load incompatible GLib/glibc
-    # libraries, which prevents the browser window from opening. Keep the
-    # browser environment clean so URLs from Android Studio work normally.
-    env.LD_LIBRARY_PATH = "";
-
     policies = {
       DontCheckDefaultBrowser = true;
 
