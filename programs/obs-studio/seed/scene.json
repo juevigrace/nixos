@@ -60,7 +60,67 @@
     "deinterlace_mode": 0,
     "deinterlace_field_order": 0,
     "monitoring_type": 0,
-    "private_settings": {}
+    "private_settings": {},
+    "filters": [
+      {
+        "id": "limiter_filter",
+        "version": 1,
+        "name": "Limiter",
+        "enabled": true,
+        "settings": {
+          "threshold": -3.0,
+          "release_time": 60
+        }
+      },
+      {
+        "id": "compressor_filter",
+        "version": 1,
+        "name": "Compressor",
+        "enabled": true,
+        "settings": {
+          "ratio": 3.0,
+          "threshold": -18.0,
+          "attack_time": 6,
+          "release_time": 60,
+          "output_gain": 0.0,
+          "sidechain_source": "none"
+        }
+      },
+      {
+        "id": "expander_filter",
+        "version": 1,
+        "name": "Expander",
+        "enabled": true,
+        "settings": {
+          "presets": "expander",
+          "ratio": 2.0,
+          "threshold": -40.0,
+          "attack_time": 10,
+          "release_time": 100,
+          "output_gain": 0.0,
+          "detector": "RMS"
+        }
+      },
+      {
+        "id": "noise_suppress_filter",
+        "version": 2,
+        "name": "Noise Suppression",
+        "enabled": true,
+        "settings": {
+          "method": "rnnoise",
+          "suppress_level": -30
+        }
+      },
+      {
+        "id": "gain_filter",
+        "version": 1,
+        "name": "Gain",
+        "enabled": true,
+        "settings": {
+          "db": -6.0
+        }
+      }
+    ]
   },
   "sources": [
     {
