@@ -2,44 +2,78 @@
 #
 # Each app, service, or hardware concern lives in its own file. Add a new
 # module by dropping a file in the matching folder and importing it here.
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     inputs.nix-index-database.nixosModules.default
 
-    ./nixpkgs.nix
-    ./packages.nix
-
     ./boot.nix
-    ./nix.nix
-    ./state.nix
-    ./locale.nix
-    ./environment.nix
-
-    ./networking/networkmanager.nix
-    ./users/juevigrace.nix
-
-    ./services/openssh.nix
-    ./programs/ssh-agent.nix
-
-    ./hardware/bluetooth.nix
-    ./services/blueman.nix
-    ./hardware/graphics.nix
-    ./hardware/fonts.nix
-    ./services/upower.nix
-    ./services/power.nix
-    ./services/gvfs.nix
-    ./services/udisks2.nix
-    ./services/greetd.nix
-    ./services/pipewire.nix
-    ./services/gnome-keyring.nix
-    ./services/docker.nix
-    ./services/xdg.nix
-
-    ./programs/niri.nix
-    ./programs/skwd-wall.nix
-    ./programs/nix-ld.nix
-    ./programs/steam.nix
-    ./programs/zsh.nix
-    ./programs/xwayland-satellite.nix
+    ./nix-ld.nix
+    ./desktop/fonts/fonts.nix
   ];
+
+  # System-wide packages. These are available to every user and to services.
+  #
+  # User-level CLI tools belong in programs/ instead.
+  # You can take one package from unstable without moving everything:
+  #   pkgs.unstable.some-package
+  environment.systemPackages = with pkgs; [
+    # NixOS's system path tolerates the clang/gcc bin/cc and bin/c++
+    # collisions, so clang can live here while gcc stays in the
+    # home-manager toolchain.
+    clang
+    git
+    curl
+    wget
+    zip
+    unzip
+  ];
+
+  # nixpkgs-wide settings and the stable/unstable overlay.
+  #
+  # Everything here applies to BOTH machines. Per-host differences belong in
+  # hosts/<host>/default.nix.
+
+  # Both machines are x86_64. The generated hardware file also sets this with
+  # lib.mkDefault, so a future host can override it without editing this file.
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
+  # Needed later for Steam, Discord, NVIDIA drivers, etc.
+  nixpkgs.config.allowUnfree = true;
+
+  # ── Stable + unstable side by side ──────────────────────────────────────
+  #
+  # `pkgs` remains the stable package set:
+  #   pkgs.firefox
+  #
+  # The same package from unstable is available as:
+  #   pkgs.unstable.firefox
+  #
+  # The unstable set gets the same nixpkgs config (allowUnfree, etc.), but it
+  # is a separate package set, so mixing the two cannot break stable packages.
+  nixpkgs.overlays = [
+    (final: _prev: {
+      unstable = import inputs.nixpkgs-unstable {
+        system = final.stdenv.hostPlatform.system;
+        config = final.config;
+      };
+    })
+  ];
+
+  nix = {
+    settings.experimental-features = ["nix-command" "flakes"];
+
+    # Channels are not used; the flake inputs are the source of truth.
+    channel.enable = false;
+
+    # Make `<nixpkgs>` resolve to the flake input so tools like
+    # `nix-shell -p` see the same package set as the system.
+    nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+  };
+
+  system.stateVersion = "26.05";
 }

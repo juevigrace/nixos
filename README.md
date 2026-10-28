@@ -7,96 +7,52 @@ per-host files differ.
 
 ```
 flake.nix                         # inputs + the two hosts
-hosts/tear/                       # desktop: hostname, GPU, hardware config
-hosts/laila/                      # laptop: hostname, GPU, hardware config
-modules/nixos/
-  default.nix                     # imports every shared system module
-  nixpkgs.nix                     # stable/unstable overlay, allowUnfree
-  packages.nix                    # system-wide packages
-  nix.nix                         # flakes, channels
-  state.nix                       # stateVersion
-  locale.nix                      # locale + timezone
-  environment.nix                 # EDITOR, shell notes
-  boot/
-    systemd-boot.nix
-    zram.nix
-  networking/networkmanager.nix
-  users/juevigrace.nix
-  hardware/
-    bluetooth.nix
-    graphics.nix
-    fonts.nix
-  programs/
-    niri.nix                      # system-level Niri
-    skwd-wall.nix                 # Wallhaven wallpaper picker + daemon
-    ssh-agent.nix                 # system SSH agent
-    xwayland-satellite.nix
-  services/
-    openssh.nix                   # SSH server
-    pipewire.nix                  # audio
-    greetd.nix                    # login manager
-    blueman.nix
-    gnome-keyring.nix
-    gvfs.nix
-    udisks2.nix
-    upower.nix
-modules/home-manager/
-  default.nix                     # imports every shared user module
-  packages/                       # one file per package-only tool
-    brightnessctl.nix
-    caligula.nix
-    fd.nix
-    fzf.nix
-    grim.nix
-    nautilus.nix
-    neovim.nix
-    opencode.nix
-    playerctl.nix
-    pwvucontrol.nix
-    ripgrep.nix
-    satty.nix
-    slurp.nix
-    swaybg.nix
-    tree.nix
-    wiremix.nix
-    wireplumber.nix
-    wl-clipboard.nix
-  programs/
-    git.nix
-    ssh.nix                       # SSH client
-    ghostty.nix
-    waypaper.nix
-    zen.nix                       # Zen Browser
-    obs-studio/                   # OBS + Aitum multistream/vertical
-    waybar/
-      default.nix
-      config.json
-      style.css
-    niri/
-      default.nix
-      config.kdl
-    fuzzel/
-      default.nix
-      fuzzel.ini
-    skwd-wall/
-      default.nix
-      config.json
-      matugen/templates/
-      wallpapers/
-    swaylock/
-      default.nix
-      config
-      colors.conf
-  services/
-    mako/
-      default.nix
-      config
-    swayidle.nix
-    cliphist.nix
-    polkit-gnome.nix
-    network-manager-applet.nix
-    blueman-applet.nix
-home/juevigrace.nix               # wires the shared home modules together
+hosts/
+  tear/
+    default.nix                   # hostname, storage, hardware imports
+    hardware-configuration.nix
+    programs/niri/outputs.kdl     # per-host monitor layout
+  laila/
+    default.nix                   # hostname, GPU, hardware imports
+    hardware-configuration.nix
+    programs/niri/outputs.kdl     # per-host monitor layout
+hosts/hardware/                   # shared hardware modules for both hosts
+  bluetooth.nix
+  graphics.nix
+  nvidia.nix
+modules/
+  nixos/
+    default.nix                   # base system + imports
+    boot.nix
+    nix-ld.nix
+    desktop/fonts/
+  home-manager/
+    default.nix                   # shared Home Manager imports
+    stylix.nix                    # present but not enabled yet
+helpers/
+  default.nix                     # shared HM helpers (liveConfig, repo)
+programs/                         # one file or folder per program
+  niri/                           # Home Manager default.nix + NixOS system.nix
+  zsh/                            # Home Manager default.nix + NixOS system.nix
+  skwd-wall/                      # Home Manager default.nix + NixOS system.nix
+  ssh/                            # Home Manager SSH client
+  ...                             # packages and configured programs
+services/                         # one folder per service
+  ssh/                            # OpenSSH server
+  mako/                           # Home Manager notification daemon
+  pipewire/                       # NixOS audio + HM wireplumber package
+  xdg/                            # NixOS portals + HM environment
+  ...
+users/
+  juevigrace/
+    default.nix                   # user entry: imports nixos.nix, packages.nix, HM
+    nixos.nix                     # NixOS-side program and service imports
+    home.nix                      # Home Manager program and service imports
+    packages.nix                  # user system packages
+    programs/
+      niri/config.kdl             # user-specific Niri config
+      ssh/config                  # user-specific SSH client config
+      ssh/authorized_keys         # public keys for incoming SSH
 scripts/rebuild                   # switch the current host
 scripts/update                    # nix flake update
 scripts/install.sh                # install either host on a chosen disk
@@ -137,7 +93,7 @@ Both hosts use the same Niri desktop:
   front microphone port. Clicking the volume module in Waybar opens
   `pwvucontrol`.
 - **Network:** NetworkManager is enabled in
-  `modules/nixos/networking/networkmanager.nix`. The Waybar network module
+  `services/networkmanager/default.nix`. The Waybar network module
   opens `nm-connection-editor`; `nm-applet` and `blueman-applet` are also
   running.
 - **X11 apps:** `xwayland-satellite`, not `programs.xwayland`.
@@ -147,12 +103,12 @@ Both hosts use the same Niri desktop:
 ### Configuration files
 
 The real config files live next to their app module, for example
-`modules/home-manager/programs/waybar/config.json`, and are linked into
+`programs/waybar/config.json`, and are linked into
 `~/.config` as **live** links with
 `config.lib.file.mkOutOfStoreSymlink`. Editing either path edits the tracked
 file; a rebuild is only needed for package/service changes. If you move the
-repo out of `~/Projects/nixos`, update the `liveConfig` path at the top of the
-app modules that link config files (Waybar, Niri, Fuzzel, Mako, and skwd-wall).
+repo out of `~/Projects/nixos`, update the repo path in
+`helpers/default.nix`; every live config file link uses that helper.
 Swaylock is the exception: its config is seeded as a writable copy so
 skwd-wall can add the current wallpaper without writing through a Nix symlink.
 
@@ -169,7 +125,7 @@ separate manual clone and is not managed here.
 
 ### Zen Browser
 
-Zen is installed by `modules/home-manager/programs/zen.nix` using the
+Zen is installed by `programs/zen.nix` using the
 `0xc000022070/zen-browser-flake` home-manager module. Extensions are installed
 declaratively through Firefox enterprise policies:
 
@@ -204,7 +160,7 @@ OBS is configured with Aitum Multistream and Aitum Vertical Canvas for
 horizontal Twitch/Kick/YouTube/TikTok output plus a 1080x1920 vertical canvas.
 The starting profile, scene collection, audio sources, and destination entries
 are seeded on first launch; stream keys stay local and must be entered in the
-OBS UI. See `modules/home-manager/programs/obs-studio/README.md` for the
+OBS UI. See `programs/obs-studio/README.md` for the
 startup order and the exact key locations.
 
 ### GPU
@@ -225,7 +181,7 @@ out-of-tree modules come from the unstable set (NVIDIA 595.104.02) while the
 rest of the system remains on stable.
 
 The unstable `nvidia-smi` binary is malformed on this release, so
-`modules/nixos/hardware/nvidia.nix` installs a small compatibility wrapper. It
+`hosts/hardware/nvidia.nix` installs a small compatibility wrapper. It
 runs the stable 595.71.05 `nvidia-smi` against the unstable 595.104.02 NVML
 library. Monitoring works and reports the installed 595.104.02 driver; remove
 the wrapper once the unstable package ships a working `nvidia-smi`.
@@ -241,7 +197,7 @@ browser and derives a Material You palette from the selected image with
 Matugen.
 
 The picker config and all Matugen templates are tracked under
-`modules/home-manager/programs/skwd-wall/` and linked live into
+`programs/skwd-wall/` and linked live into
 `~/.config/skwd-wall-v2/`. The currently selected wallpaper is kept in the
 repo at `wallpapers/wallhaven-r735gq.png` and linked to
 `~/Pictures/Wallpapers/wallhaven-r735gq.png`; Home Manager also seeds the
@@ -385,20 +341,22 @@ Private keys are **not** in this repo; they live in `~/.ssh` and must be
 restored from a backup on a fresh install. Everything else (client config,
 agent, incoming-access public keys) is declared here.
 
-`programs.ssh` writes `~/.ssh/config` with:
+The client config is `users/juevigrace/programs/ssh/config`, linked live to
+`~/.ssh/config` by `programs/ssh/default.nix`, with:
 
 - `github.com` → `~/.ssh/personal/id_ed25519`
 - `laila` → `192.168.1.196`, key `~/.ssh/lan`
 - `tear` → `192.168.1.23` (Wi-Fi is `192.168.1.174`), key `~/.ssh/lan`
 
-Both public keys are in `users.users.juevigrace.openssh.authorizedKeys.keys`,
-so either machine accepts either key. The SSH server is keys-only
-(`PasswordAuthentication = false`).
+Both public keys are in `users/juevigrace/programs/ssh/authorized_keys`, read
+by `users/juevigrace/default.nix`, so either machine accepts either key. The
+SSH server is keys-only (`PasswordAuthentication = false`).
 
 ### Agent
 
-`programs.ssh.startAgent = true` starts `ssh-agent` at login. The agent begins
-each login empty, so add the keys once per session when you want them cached:
+`users/juevigrace/home.nix` sets `services.ssh-agent.enable = true`, which
+starts `ssh-agent` at login. The agent begins each login empty, so add the keys
+once per session when you want them cached:
 
 ```sh
 ssh-add ~/.ssh/lan ~/.ssh/personal/id_ed25519
@@ -430,9 +388,8 @@ ssh-keygen -y -f ~/.ssh/personal/id_ed25519 > ~/.ssh/personal/id_ed25519.pub
 ```
 
 Then replace the matching `ssh-ed25519 ...` lines in
-`users.users.juevigrace.openssh.authorizedKeys.keys`
-(`modules/nixos/users/juevigrace.nix`) and rebuild, otherwise incoming SSH to
-either machine will reject the new key.
+`users/juevigrace/programs/ssh/authorized_keys` and rebuild, otherwise incoming
+SSH to either machine will reject the new key.
 
 ### Register the keys with GitHub
 
@@ -446,7 +403,7 @@ GitHub needs the public half of the personal key twice — once as an
 2. GitHub → Settings → SSH and GPG keys → **New SSH key**.
    - Add it with key type **Authentication key**.
    - Add it again with key type **Signing key** (git signs commits with it,
-     see `modules/home-manager/programs/git.nix`).
+     see `programs/git.nix`).
 3. Verify:
    ```sh
    ssh -T git@github.com

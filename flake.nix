@@ -10,7 +10,7 @@
     #   nix flake update
     #
     # For normal day-to-day use you do NOT need to do that: the overlay in
-    # modules/nixos/nixpkgs.nix gives you `pkgs.unstable.<package>` while the
+    # modules/nixos/default.nix gives you `pkgs.unstable.<package>` while the
     # rest of the system stays on stable.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
 
@@ -54,18 +54,16 @@
     home-manager,
     ...
   } @ inputs: let
-    # Both machines share every module. Only hosts/<host>/ is different.
+    # Hosts own their hardware and base system, and import the users they
+    # need. The users then import the programs and services they want.
     mkHost = host:
       nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
 
         modules = [
-          # Per-host system + hardware configuration.
+          # Per-host system + hardware configuration. The host also imports
+          # modules/nixos and the users it needs.
           ./hosts/${host}
-
-          # Shared system configuration. This is a directory import, so it
-          # loads modules/nixos/default.nix, which imports the rest.
-          ./modules/nixos
 
           # Home Manager as a NixOS module (not standalone).
           home-manager.nixosModules.home-manager
@@ -75,7 +73,6 @@
               useUserPackages = true;
               backupFileExtension = ".bkp";
               extraSpecialArgs = {inherit inputs;};
-              users.juevigrace = import ./home/juevigrace.nix;
             };
           }
         ];

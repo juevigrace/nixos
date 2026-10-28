@@ -1,9 +1,13 @@
 {...}: {
   # Host-only configuration for tear (desktop).
-  # Shared configuration lives in modules/nixos/.
+  # Shared system configuration lives in modules/nixos/; shared hardware
+  # modules live in hosts/hardware/.
   imports = [
     ./hardware-configuration.nix
-    ../../modules/nixos/hardware/nvidia.nix
+    ../hardware/bluetooth.nix
+    ../hardware/nvidia.nix
+    ../../modules/nixos
+    ../../users/juevigrace
   ];
 
   networking.hostName = "tear";

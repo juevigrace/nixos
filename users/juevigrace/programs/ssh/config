@@ -1,0 +1,23 @@
+# Global defaults.
+Host *
+  AddKeysToAgent yes
+  ServerAliveInterval 60
+
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/personal/id_ed25519
+  IdentitiesOnly yes
+
+Host laila
+  HostName 192.168.1.196
+  User juevigrace
+  IdentityFile ~/.ssh/lan
+  IdentitiesOnly yes
+
+Host tear
+  # Wired. Wi-Fi is 192.168.1.174; change this line if you use Wi-Fi.
+  HostName 192.168.1.23
+  User juevigrace
+  IdentityFile ~/.ssh/lan
+  IdentitiesOnly yes

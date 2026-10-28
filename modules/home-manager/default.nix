@@ -2,88 +2,16 @@
 #
 # Each app or service lives in its own file/folder. To disable something,
 # comment out its import below.
-{inputs, ...}: {
-  imports = [
-    inputs.stylix.homeModules.stylix
-
-    # CLI tools
-    ./packages/android-tools.nix
-    ./packages/brightnessctl.nix
-    ./packages/caligula.nix
-    ./packages/fd.nix
-    ./packages/fzf.nix
-    ./packages/lazydocker.nix
-    ./packages/neovim.nix
-    ./packages/neovim-toolchain.nix
-    ./packages/nixd.nix
-    ./packages/opencode.nix
-    ./packages/playerctl.nix
-    ./packages/ripgrep.nix
-    ./packages/tree.nix
-    ./packages/wl-clipboard.nix
-    ./packages/yt-dlp.nix
-
-    # Desktop apps
-    ./packages/android-studio.nix
-    ./packages/discord.nix
-    ./packages/grim.nix
-    ./packages/nautilus.nix
-    ./packages/satty.nix
-    ./packages/slurp.nix
-    ./packages/spotify.nix
-    ./packages/swaybg.nix
-    ./packages/tableplus.nix
-    ./packages/vlc.nix
-
-    # Gaming
-    ./packages/heroic.nix
-    ./packages/mangohud.nix
-    ./packages/modrinth.nix
-    ./packages/wine.nix
-
-    # Audio tools
-    ./packages/pwvucontrol.nix
-    ./packages/wiremix.nix
-    ./packages/wireplumber.nix
-
-    # Configured programs
-    ./programs/git.nix
-    ./programs/ssh.nix
-    ./programs/ghostty.nix
-    ./programs/zsh.nix
-    ./programs/waypaper.nix
-    ./programs/chromium.nix
-    ./programs/firefox.nix
-    ./programs/zen.nix
-    ./programs/obs-studio
-
-    ./programs/waybar
-    ./programs/niri
-    ./programs/fuzzel
-    ./programs/swaylock
-    ./programs/skwd-wall
-    ./programs/skwd-theme-sync
-    ./programs/tmux
-    ./programs/btop
-    ./programs/fastfetch.nix
-    ./programs/cursor
-
-    ./services/mako
-    ./services/xdg.nix
-    ./services/swayidle.nix
-    ./services/cliphist.nix
-    ./services/polkit-gnome.nix
-    ./services/network-manager-applet.nix
-    ./services/blueman-applet.nix
-  ];
+{
+  config,
+  ...
+}: let
+  helpers = import ../../helpers {inherit config;};
+in {
+  _module.args.helpers = helpers;
 
   # Reload systemd user units when home-manager changes them.
   systemd.user.startServices = "sd-switch";
-
-  # The Stylix Home Manager module is imported above, but Stylix itself is not
-  # enabled yet. Its default package overlays conflict with
-  # `home-manager.useGlobalPkgs = true`, so turn them off explicitly.
-  stylix.overlays.enable = false;
 
   # Optional programs. Uncomment the setting and add a matching module/import
   # when you want it.
