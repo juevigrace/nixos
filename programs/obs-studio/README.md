@@ -19,8 +19,13 @@ overwrite changes made in the OBS UI.
 1. Start OBS.
 2. The starting scene is **Starting Soon**. Switch to **Main** and approve the
    PipeWire screen-capture dialog the first time. The **Display Capture**
-   source will remember the selected monitor after that.
-3. Check **Audio Mixer**: `Desktop Audio` and `Microphone` use the default
+   source feeds both the horizontal and vertical Main scenes and will remember
+   the selected monitor after that.
+3. In the **Aitum Vertical** dock, confirm the scene list contains
+   **Starting Soon (Vertical)**, **Main (Vertical)**, **BRB (Vertical)**, and
+   **Ending (Vertical)**. Switching the main scene should switch the vertical
+   scene through the linked-scene button.
+4. Check **Audio Mixer**: `Desktop Audio` and `Microphone` use the default
    PipeWire/PulseAudio devices. Change them in the source properties if needed.
 
 ## Horizontal stream keys
@@ -46,23 +51,49 @@ Aitum entry.
 
 ## Vertical layout
 
-The **Aitum Vertical** dock starts with a `1080x1920` canvas, a default
-`Vertical Scene`, and a TikTok destination. Add the sources you want to the
-vertical scene, then enter the TikTok server URL and key in the vertical
-canvas settings. The vertical settings are stored in:
+The **Aitum Vertical** dock runs a separate `1080x1920` canvas with four
+seeded scenes: **Starting Soon (Vertical)**, **Main (Vertical)**,
+**BRB (Vertical)**, and **Ending (Vertical)**. Each horizontal scene is
+linked to its vertical counterpart, so switching the main scene also switches
+the vertical scene. The links can be changed with the chain button in the
+vertical dock.
+
+**Main (Vertical)** reuses the horizontal **Display Capture** source and
+scales it to cover the vertical canvas, cropping the sides. Approve the
+PipeWire dialog once; the same capture feeds both layouts.
+
+The vertical canvas is seeded with **Kick**, **YouTube**, and **TikTok**
+destinations. Enter the stream keys in the vertical canvas settings; TikTok's
+server URL is account-specific, and the Kick and YouTube URLs are pre-filled.
+The vertical settings are stored in:
 
 - `~/.config/obs-studio/plugin_config/vertical-canvas/config.json`
 
-Vertical streaming is not started automatically; use the vertical dock's
-stream button after the main stream is running.
+The vertical encoder uses the main OBS encoder settings and follows the main
+profile's video/audio bitrate. Vertical streaming is not started automatically;
+use the vertical dock's stream button after the main stream is running.
+
+The seeded profile also enables Twitch Enhanced Broadcasting with the Aitum
+Vertical canvas as its additional canvas. That sends the vertical canvas to
+Twitch as an extra track on the main Twitch stream, separately from the Aitum
+Vertical Kick/YouTube/TikTok outputs. Disable it in **Settings -> Stream** if
+you do not want OBS to send the vertical canvas to Twitch.
+
+Do not send the horizontal and vertical feeds to the same platform/account at
+the same time. Most platforms allow only one live ingest per channel; use the
+vertical destinations for platforms that are not receiving the horizontal
+stream.
 
 ## Bandwidth and encoding
 
 The seeded horizontal output is 1920x1080 at 60 fps, 6000 kbps video and
 160 kbps audio. Aitum sends one encoded video stream to three additional
 destinations, so four horizontal destinations use roughly 24 Mbps upload.
-The vertical canvas adds another roughly 6 Mbps when enabled. Lower the
-bitrate in **Settings -> Output** if the connection cannot sustain that.
+The vertical canvas uses its own 6000 kbps encode and sends one copy to each
+enabled vertical destination, so three destinations add roughly 18 Mbps.
+Twitch Enhanced Broadcasting may add another track to the Twitch upload; OBS
+negotiates that track with Twitch. Lower the bitrate in
+**Settings -> Output** if the connection cannot sustain that.
 Recording uses the main horizontal output; the vertical canvas is not
 recorded by default.
 
