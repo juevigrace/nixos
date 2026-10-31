@@ -37,6 +37,7 @@
     ../../programs/heroic.nix
     ../../programs/mangohud.nix
     ../../programs/modrinth.nix
+    ../../programs/pokebonk.nix
     ../../programs/wine.nix
 
     # Audio tools
@@ -76,6 +77,14 @@
     ../../services/polkit-gnome
     ../../services/swaybg
   ];
+
+  # GTK apps such as Nautilus expect the Adwaita icon theme, but NixOS does
+  # not install it automatically without a full GNOME desktop. Without it,
+  # symbolic icons fall back to the "missing image" placeholder.
+  gtk.iconTheme = {
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+  };
 
   home = {
     username = "juevigrace";

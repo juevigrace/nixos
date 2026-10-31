@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Bump the PokéBonk desktop-wrapper pin to the version published at
+# https://pokebonk.com/desktop.json. The game itself updates over the web;
+# this only tracks the Electron shell.
+#
+# Usage:
+#   ./scripts/update-pokebonk
+#   ./scripts/rebuild
+
+cd "$(dirname "$0")/.."
+
+file="programs/pokebonk.nix"
+
+if [ ! -f "$file" ]; then
+  echo "error: $file not found" >&2
+  exit 1
+fi
+
+json="$(curl -fsSL --retry 3 -H 'Cache-Control: no-cache' https://pokebonk.com/desktop.json)"
+version="$(printf '%s\n' "$json" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+
+if [ -z "$version" ]; then
+  echo "error: could not read the version from desktop.json" >&2
+  exit 1
+fi
+
+url="https://github.com/CharcherGit/pokebonk-app/releases/download/v${version}/PokeBonk-${version}-linux-x86_64.AppImage"
+hash="$(nix store prefetch-file --json "$url" | sed -n 's/.*"hash"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+
+if [ -z "$hash" ]; then
+  echo "error: could not prefetch $url" >&2
+  exit 1
+fi
+
+old_version="$(sed -n 's/.*version = "\([^"]*\)".*/\1/p' "$file" | head -n 1)"
+
+sed -i -E "s|(version = )\"[^\"]*\"|\1\"${version}\"|" "$file"
+sed -i -E "s|(hash = )\"[^\"]*\"|\1\"${hash}\"|" "$file"
+
+echo "PokéBonk: ${old_version:-unknown} -> ${version}"
+echo "Run ./scripts/rebuild to apply it."
