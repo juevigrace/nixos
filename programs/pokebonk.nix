@@ -1,13 +1,13 @@
 {pkgs, ...}: let
   pname = "pokebonk";
-  version = "1.2.0";
+  version = "1.3.0";
 
   # Official Linux desktop client. Upstream only publishes an AppImage; it is
   # an Electron shell around https://pokebonk.com, so the game content itself
   # stays up to date over the web.
   src = pkgs.fetchurl {
     url = "https://github.com/CharcherGit/pokebonk-app/releases/download/v${version}/PokeBonk-${version}-linux-x86_64.AppImage";
-    hash = "sha256-7fNm4QQM/UBTw8wuYkR4HYCqzQHewH2YSaKQGcllUCo=";
+    hash = "sha256-Zf+CObCXOJBt7YSmOW9l6efNiRaTXMeLkKhVJ3pIgyA=";
   };
 
   # wrapType2 unpacks the AppImage and runs it in an FHS environment with the
