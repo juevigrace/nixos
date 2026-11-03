@@ -9,9 +9,11 @@
     ../../programs/android-tools.nix
     ../../programs/brightnessctl.nix
     ../../programs/caligula.nix
+    ../../programs/cloc.nix
     ../../programs/fd.nix
     ../../programs/fzf.nix
     ../../programs/lazydocker.nix
+    ../../programs/ncdu.nix
     ../../programs/neovim.nix
     ../../programs/neovim-toolchain.nix
     ../../programs/nixd.nix
