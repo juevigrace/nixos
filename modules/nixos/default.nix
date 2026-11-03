@@ -31,6 +31,9 @@
     wget
     zip
     unzip
+
+    # Lets Sodium resolve human-readable GPU names via lspci.
+    pciutils
   ];
 
   # nixpkgs-wide settings and the stable/unstable overlay.
