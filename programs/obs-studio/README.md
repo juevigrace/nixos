@@ -30,19 +30,30 @@ overwrite changes made in the OBS UI.
 
 ## Voice filters
 
-The **Microphone** source has an OBS-only filter chain:
+The **Microphone** source has an OBS-only filter chain. OBS lists filters
+top-to-bottom but applies them bottom-to-top, so the audio path is:
 
-1. **Gain** at `-6 dB`
-2. **Noise Suppression** using RNNoise
-3. **Expander** for gentle gating between phrases
-4. **Compressor** for consistent loudness
-5. **Limiter** for peak protection
+1. **3-Band Equalizer** with **Low** at `-5 dB` (cuts air-conditioning rumble
+   and proximity boom)
+2. **Gain** at `+2 dB`
+3. **Noise Suppression** using RNNoise
+4. **Expander** in **Gate** mode: `4:1`, `-42 dB`, `25 ms` attack,
+   `200 ms` release, RMS detector
+5. **Compressor**: `3:1`, `-18 dB`, `10 ms` attack, `100 ms` release
+6. **Limiter**: `-3 dB`, `60 ms` release
 
 The OBS mic fader stays at `0 dB`; adjust the **Gain** filter first if speech
-is too quiet or too loud. If breathing is still audible in the pauses, raise
-the **Expander** threshold from `-40 dB` toward `-35` or `-30 dB`. If speech
-starts sounding choppy, lower it again. These filters affect only OBS, not
-Discord, Steam, or other applications.
+is too quiet or too loud. If breathing or AC noise is still audible in the
+pauses, raise the **Expander** threshold in `2 dB` steps; if the first word
+gets cut off, lower it again. The **Low** EQ band can go to `-10 dB` if rumble
+persists, but `-5 dB` keeps more body in the voice. The Noise Suppression
+level slider only applies to Speex; RNNoise ignores it.
+
+Monitoring is off in the seed. If you need to hear the processed signal while
+testing, set the Microphone to **Monitor Only** and use headphones; **Monitor
+and Output** lets you hear yourself but is easy to mistake for echo or
+background noise. These filters affect only OBS, not Discord, Steam, or other
+applications.
 
 ## Horizontal stream keys
 
