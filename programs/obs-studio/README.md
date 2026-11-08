@@ -111,31 +111,6 @@ the same time. Most platforms allow only one live ingest per channel; use the
 vertical destinations for platforms that are not receiving the horizontal
 stream.
 
-## Phone camera
-
-Android phones can be used as a USB webcam through DroidCam. The
-`programs/droidcam.nix` module installs the client and loads `v4l2loopback`.
-The loopback device is pinned to `/dev/video10` so the OBS source has a stable
-path.
-
-1. Rebuild and reboot once so the v4l2loopback module options take effect.
-2. On the phone, enable **Developer options -> USB debugging**.
-3. Connect USB, authorize the computer, and confirm `adb devices` lists it.
-4. Start the client with `droidcam`, or use:
-   ```sh
-   droidcam-cli -v -size=1920x1080 -dev=/dev/video10 adb 4747
-   ```
-5. In OBS, the **Phone Camera** source uses **Video Capture Device (V4L2)** at
-   `/dev/video10`. Select 1080p30 and leave its audio disabled.
-
-The live scene collection places the camera in the bottom-right corner of
-**Main** and at the top-center of **Main (Vertical)**, over the shared screen.
-The source is not part of the seed because it depends on the phone; on a fresh
-install, add a **Video Capture Device (V4L2)** and select `/dev/video10`.
-
-If OBS's virtual camera is enabled later, configure two v4l2loopback devices
-so OBS and DroidCam do not compete for `/dev/video10`.
-
 ## Bandwidth and encoding
 
 The seeded horizontal output is 1920x1080 at 60 fps, 6000 kbps video and

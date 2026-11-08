@@ -15,7 +15,6 @@
 
     ../../programs/niri/system.nix
     ../../programs/steam.nix
-    ../../programs/droidcam.nix
   ];
 
   # The one user shared by both machines.
