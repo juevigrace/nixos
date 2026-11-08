@@ -31,6 +31,8 @@
     wget
     zip
     unzip
+    man-pages
+    man-pages-posix
 
     # Lets Sodium resolve human-readable GPU names via lspci.
     pciutils
