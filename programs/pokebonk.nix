@@ -1,6 +1,21 @@
-{pkgs, ...}: let
+{lib, osConfig, pkgs, ...}: let
   pname = "pokebonk";
   version = "1.4.0";
+
+  # On the hybrid laptop, force Chromium onto the NVIDIA GPU via XWayland.
+  # `nvidia-offload` alone is not enough: Electron's native Wayland backend
+  # pins its render node to the Intel iGPU.
+  useNvidia = osConfig.networking.hostName == "laila";
+  nvidiaArgs = [
+    "--add-flags" "--ozone-platform=x11"
+    "--set" "__NV_PRIME_RENDER_OFFLOAD" "1"
+    "--set" "__NV_PRIME_RENDER_OFFLOAD_PROVIDER" "NVIDIA-G0"
+    "--set" "__GLX_VENDOR_LIBRARY_NAME" "nvidia"
+    "--set" "__VK_LAYER_NV_optimus" "NVIDIA_only"
+  ];
+  wrapperArgs =
+    ["--add-flags" "--no-sandbox"]
+    ++ lib.optionals useNvidia nvidiaArgs;
 
   # Official Linux desktop client. Upstream only publishes an AppImage; it is
   # an Electron shell around https://pokebonk.com, so the game content itself
@@ -47,7 +62,8 @@
 
     # Electron's bundled chrome-sandbox cannot be setuid in the Nix store, so
     # match the upstream .desktop file and run without the Chromium sandbox.
-    makeWrapper ${app}/bin/${pname} $out/bin/${pname} --add-flags "--no-sandbox"
+    makeWrapper ${app}/bin/${pname} $out/bin/${pname} \
+      ${lib.escapeShellArgs wrapperArgs}
 
     install -Dm644 ${desktopItem}/share/applications/${pname}.desktop \
       $out/share/applications/${pname}.desktop
