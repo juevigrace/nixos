@@ -20,6 +20,7 @@
     ../../programs/opencode.nix
     ../../programs/playerctl.nix
     ../../programs/ripgrep.nix
+    ../../programs/rust.nix
     ../../programs/tree.nix
     ../../programs/wl-clipboard.nix
     ../../programs/yt-dlp.nix
@@ -27,6 +28,7 @@
     # Desktop apps
     ../../programs/android-studio.nix
     ../../programs/discord.nix
+    ../../programs/gnome-disks.nix
     ../../programs/grim.nix
     ../../programs/nautilus.nix
     ../../programs/satty.nix
@@ -34,6 +36,9 @@
     ../../programs/spotify.nix
     ../../programs/tableplus.nix
     ../../programs/vlc.nix
+
+    # Video editing
+    ../../programs/video-editing.nix
 
     # Gaming
     ../../programs/heroic.nix

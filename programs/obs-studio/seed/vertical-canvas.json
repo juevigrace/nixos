@@ -14,7 +14,7 @@
       "max_size_mb": 0,
       "max_time_sec": 0,
       "recording_match_main": false,
-      "audio_bitrate": 0,
+      "audio_bitrate": 160,
       "backtrack": false,
       "backtrack_seconds": 0,
       "backtrack_path": "",
@@ -24,40 +24,30 @@
       "virtual_camera_mode": 0,
       "stream_outputs": [
         {
-          "name": "Kick",
-          "stream_server": "rtmps://fa723fc1b171.global-contribute.live-video.net",
-          "stream_key": "",
-          "enabled": true,
-          "advanced": false,
-          "scale_type": 3,
-          "audio_encoder_settings": {
-            "bitrate": 128
-          },
-          "audio_encoder": "ffmpeg_aac"
-        },
-        {
           "name": "YouTube",
           "stream_server": "rtmps://a.rtmps.youtube.com:443/live2",
-          "stream_key": "",
           "enabled": true,
           "advanced": false,
           "scale_type": 3,
           "audio_encoder_settings": {
             "bitrate": 128
           },
-          "audio_encoder": "ffmpeg_aac"
+          "audio_encoder": "ffmpeg_aac",
+          "stream_key": "",
+          "audio_track": 1
         },
         {
           "name": "TikTok",
-          "stream_server": "",
-          "stream_key": "",
           "enabled": true,
           "advanced": false,
           "scale_type": 3,
           "audio_encoder_settings": {
             "bitrate": 128
           },
-          "audio_encoder": "ffmpeg_aac"
+          "audio_encoder": "ffmpeg_aac",
+          "stream_server": "",
+          "stream_key": "",
+          "audio_track": 0
         }
       ],
       "stream_delay_enabled": false,

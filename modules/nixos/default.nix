@@ -12,6 +12,7 @@
     inputs.nix-index-database.nixosModules.default
 
     ./boot.nix
+    ./filesystems.nix
     ./nix-ld.nix
     ./desktop/fonts/fonts.nix
   ];

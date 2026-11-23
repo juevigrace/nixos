@@ -6,7 +6,8 @@ multistreaming and a vertical layout:
 - Aitum Multistream for additional horizontal destinations
 - Aitum Vertical Canvas for the 1080x1920 canvas
 - PipeWire screen/audio capture
-- Vulkan/OpenGL game capture
+- Vulkan/OpenGL game capture in a separate **Game** scene
+- PipeWire application audio capture for game, Discord, and music
 - Source Record (for optional per-source recordings)
 
 The Home Manager activation seeds a `Streaming` profile and scene collection
@@ -21,12 +22,59 @@ overwrite changes made in the OBS UI.
    PipeWire screen-capture dialog the first time. The **Display Capture**
    source feeds both the horizontal and vertical Main scenes and will remember
    the selected monitor after that.
-3. In the **Aitum Vertical** dock, confirm the scene list contains
-   **Starting Soon (Vertical)**, **Main (Vertical)**, **BRB (Vertical)**, and
-   **Ending (Vertical)**. Switching the main scene should switch the vertical
-   scene through the linked-scene button.
-4. Check **Audio Mixer**: `Desktop Audio` and `Microphone` use the default
-   PipeWire/PulseAudio devices. Change them in the source properties if needed.
+3. Switch to the new **Game** scene. It contains a **Game Capture** source and
+   the same **Phone Camera** source as **Main**, hidden. On Linux, Game Capture
+   uses `obs-vkcapture`; the game must be started with the capture layer
+   enabled. For CS2 in Steam, open **Steam -> Library -> Counter-Strike 2 ->
+   Properties -> General -> Launch Options** and enter:
+
+   ```text
+   env OBS_VKCAPTURE=1 %command%
+   ```
+
+   Then fully restart CS2. This is per game; repeat for any other game you want
+   to capture. For OpenGL games, use `obs-gamecapture %command%` instead. For
+   non-Steam launchers (Heroic, Lutris, standalone), set `OBS_VKCAPTURE=1` in
+   the game's environment or launch it through `obs-gamecapture`.
+4. In the **Aitum Vertical** dock, confirm the scene list contains
+   **Starting Soon (Vertical)**, **Main (Vertical)**, **Game (Vertical)**,
+   **BRB (Vertical)**, and **Ending (Vertical)**. Switching the main scene
+   should switch the vertical scene through the linked-scene button.
+5. Check **Audio Mixer**: **Desktop Audio** is muted by design. **Microphone**
+   uses the default input; **Game Audio**, **Discord Audio**, and
+   **Music (Zen)** are PipeWire application captures. Change their target apps
+   in the source properties if needed.
+
+## Audio routing
+
+The mix is split so music can be heard everywhere except YouTube:
+
+| Source | Track 1 | Track 2 |
+|---|---|---|
+| Microphone | yes | yes |
+| Game Audio (`cs2`) | yes | yes |
+| Discord Audio | yes | yes |
+| Music (Zen) | yes | no |
+| Desktop Audio | muted | muted |
+
+Track 1 is used by the main Twitch output, Aitum **Kick**, Aitum **TikTok**,
+and vertical **TikTok**. Track 2 is used by Aitum **YouTube** and vertical
+**YouTube**. That keeps the music off both YouTube outputs while sending it to
+the other destinations.
+
+The three extra audio sources are OBS **Application Audio Capture (PipeWire)**
+sources:
+
+- **Game Audio** matches the `cs2` application and is only present in the
+  **Game** scene.
+- **Discord Audio** matches Discord and is present in every horizontal scene.
+- **Music (Zen)** matches Zen Browser (`zen-beta`) and is present in every
+  horizontal scene. It captures the whole browser's audio, so use it for
+  YouTube Music and keep other audio out of Zen if you do not want it streamed.
+
+Game audio is deliberately not captured in **Main**, matching the Windows
+setup where only the game scene has game audio. If you want game audio in
+**Main** too, add the **Game Audio** source to that scene.
 
 ## Voice filters
 
@@ -57,8 +105,13 @@ applications.
 
 ## Horizontal stream keys
 
-The main OBS output is configured for Twitch. This is the encoder that Aitum
-reuses for the other horizontal outputs, so start the main OBS stream first.
+The main OBS output is configured for Twitch. This is the video encoder that
+Aitum reuses for the other horizontal outputs, so start the main OBS stream
+first.
+The main Twitch output uses audio Track 1. The Aitum **YouTube** entry is
+configured for Track 2, so music is not sent to YouTube; **Kick** and
+**TikTok** use Track 1. Change these in the Aitum output settings if your
+routing changes.
 
 1. Open **Settings -> Stream**, paste the Twitch stream key, and apply.
 2. Open the **Aitum Multistream** dock and paste the keys for **Kick**,
@@ -78,27 +131,32 @@ Aitum entry.
 
 ## Vertical layout
 
-The **Aitum Vertical** dock runs a separate `1080x1920` canvas with four
+The **Aitum Vertical** dock runs a separate `1080x1920` canvas with five
 seeded scenes: **Starting Soon (Vertical)**, **Main (Vertical)**,
-**BRB (Vertical)**, and **Ending (Vertical)**. Each horizontal scene is
-linked to its vertical counterpart, so switching the main scene also switches
-the vertical scene. The links can be changed with the chain button in the
-vertical dock.
+**Game (Vertical)**, **BRB (Vertical)**, and **Ending (Vertical)**. Each
+horizontal scene is linked to its vertical counterpart, so switching the main
+scene also switches the vertical scene. The links can be changed with the chain
+button in the vertical dock.
 
 **Main (Vertical)** reuses the horizontal **Display Capture** source and
-scales it to cover the vertical canvas, cropping the sides. Approve the
-PipeWire dialog once; the same capture feeds both layouts.
+scales it to cover the vertical canvas, cropping the sides. **Game (Vertical)**
+does the same with the **Game Capture** source, so the vertical output follows
+you into the Game scene. Approve the PipeWire dialog once for **Display
+Capture**; Game Capture is a separate source.
 
-The vertical canvas is seeded with **Kick**, **YouTube**, and **TikTok**
-destinations. Enter the stream keys in the vertical canvas settings; TikTok's
-server URL is account-specific, and the Kick and YouTube URLs are pre-filled.
-The vertical settings are stored in:
+The vertical canvas is seeded with **YouTube** and **TikTok** destinations.
+Enter the stream keys in the vertical canvas settings; TikTok's server URL is
+account-specific, and the YouTube URL is pre-filled. Add more vertical
+destinations from the Aitum Vertical settings if needed. The vertical settings
+are stored in:
 
 - `~/.config/obs-studio/plugin_config/vertical-canvas/config.json`
 
 The vertical encoder uses the main OBS encoder settings and follows the main
 profile's video/audio bitrate. Vertical streaming is not started automatically;
 use the vertical dock's stream button after the main stream is running.
+Vertical **YouTube** uses audio Track 2 (no music), while vertical **TikTok**
+uses Track 1 (with music), matching the horizontal routing.
 
 The seeded profile also enables Twitch Enhanced Broadcasting with the Aitum
 Vertical canvas as its additional canvas. That sends the vertical canvas to
@@ -117,7 +175,8 @@ The seeded horizontal output is 1920x1080 at 60 fps, 6000 kbps video and
 160 kbps audio. Aitum sends one encoded video stream to three additional
 destinations, so four horizontal destinations use roughly 24 Mbps upload.
 The vertical canvas uses its own 6000 kbps encode and sends one copy to each
-enabled vertical destination, so three destinations add roughly 18 Mbps.
+enabled vertical destination, so the default two destinations add roughly
+12 Mbps.
 Twitch Enhanced Broadcasting may add another track to the Twitch upload; OBS
 negotiates that track with Twitch. Lower the bitrate in
 **Settings -> Output** if the connection cannot sustain that.

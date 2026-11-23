@@ -7,25 +7,48 @@
         {
           "name": "Kick",
           "stream_server": "rtmps://fa723fc1b171.global-contribute.live-video.net",
-          "stream_key": "",
           "advanced": false,
-          "expanded": false
+          "expanded": false,
+          "scale_type": 3,
+          "audio_encoder_settings": {
+            "bitrate": 128
+          },
+          "audio_encoder": "ffmpeg_aac",
+          "stream_key": "",
+          "audio_track": 0
         },
         {
           "name": "YouTube",
           "stream_server": "rtmps://a.rtmps.youtube.com:443/live2",
-          "stream_key": "",
           "advanced": false,
-          "expanded": false
+          "expanded": false,
+          "scale_type": 3,
+          "audio_encoder_settings": {
+            "bitrate": 128
+          },
+          "audio_encoder": "ffmpeg_aac",
+          "stream_key": "",
+          "audio_track": 1
         },
         {
           "name": "TikTok",
           "stream_server": "",
           "stream_key": "",
           "advanced": false,
-          "expanded": false
+          "expanded": false,
+          "scale_type": 3,
+          "audio_encoder_settings": {
+            "bitrate": 128
+          },
+          "audio_encoder": "ffmpeg_aac",
+          "audio_track": 0
         }
-      ]
+      ],
+      "video_encoder_description0": "1920x1080 60fps 6000Kbps",
+      "video_encoder_description1": "1280x720 60fps 2500Kbps",
+      "video_encoder_description2": "640x360 30fps 500Kbps",
+      "video_encoder_description3": "1080x1920 60fps 5000Kbps",
+      "video_encoder_description4": "360x640 30fps 500Kbps"
     }
   ]
 }

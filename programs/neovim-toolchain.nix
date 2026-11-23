@@ -17,11 +17,9 @@
       ps.virtualenv
     ]))
 
-    # Mason's npm, Go, and cargo packages.
+    # Mason's npm and Go packages. Rust comes from rustup in programs/rust.nix.
     nodejs
     go
-    rustc
-    cargo
 
     # Java-based Mason packages (jdtls, kotlin-lsp, gradle-language-server,
     # google-java-format, ktlint) use the SDKMAN JBR configured in
